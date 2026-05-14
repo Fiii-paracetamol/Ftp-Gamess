@@ -1,0 +1,120 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial, sans-serif;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  background:
+    linear-gradient(
+      to top,
+      #0f172a 0%,
+      #111827 40%,
+      #1e293b 100%
+    );
+  position:relative;
+}
+
+/* background glow */
+body::before{
+  content:"";
+  position:absolute;
+  width:500px;
+  height:500px;
+  background:rgba(255,140,0,0.15);
+  filter:blur(120px);
+  top:-100px;
+  right:-100px;
+}
+
+body::after{
+  content:"";
+  position:absolute;
+  width:400px;
+  height:400px;
+  background:rgba(0,150,255,0.15);
+  filter:blur(120px);
+  bottom:-100px;
+  left:-100px;
+}
+
+/* kota */
+.overlay{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:180px;
+  background:
+    linear-gradient(to top, rgba(0,0,0,0.9), transparent),
+    url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1200&auto=format&fit=crop');
+  background-size:cover;
+  background-position:center;
+  opacity:0.25;
+}
+
+/* login box */
+.login-box{
+  position:relative;
+  z-index:10;
+  width:90%;
+  max-width:350px;
+  padding:25px;
+  border-radius:25px;
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 0 25px rgba(0,0,0,0.4);
+}
+
+h1{
+  color:white;
+  text-align:center;
+  margin-bottom:5px;
+  letter-spacing:2px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#cbd5e1;
+  margin-bottom:25px;
+  font-size:14px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin-bottom:15px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,0.08);
+  color:white;
+  outline:none;
+  font-size:15px;
+}
+
+input::placeholder{
+  color:#94a3b8;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(to right,#2563eb,#3b82f6);
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:scale(1.03);
+}

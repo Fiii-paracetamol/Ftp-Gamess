@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Super Boss Battle - Final Edition</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg,#0f172a,#1e1b2e);
+    color: white;
+    padding: 20px;
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  .container { max-width: 700px; margin: auto; }
+
+  .header { text-align: center; margin-bottom: 15px; }
+  .header h1 { margin: 0; font-size: 28px; letter-spacing: 2px; color: #f87171; }
+  .sub { color: #94a3b8; font-size: 14px; }
+
+  .box {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    border: 1px solid #334155;
+  }
+
+  .question {
+    font-size: 22px;
+    text-align: center;
+    margin: 20px 0;
+    line-height: 1.4;
+  }
+
+  .answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  button {
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    background: #3b82f6;
+    transform: translateY(-2px);
+  }
+
+  button:active { transform: scale(0.95); }
+
+  /* Progress Bar */
+  .hpbar {
+    height: 18px;
+    background: #0f172a;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+    border: 2px solid #334155;
+  }
+
+  .hpfill {
+    height: 100%;
+    background: #22c55e;
+    width: 100%;
+    transition: width 0.4s ease-out, background 0.4s;
+  }
+
+  .status {
+    text-align: center;
+    margin-top: 10px;
+    color: #cbd5e1;
+    font-weight: bold;
+  }
+
+  /* --- ANIMASI --- */
+  @keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    40% { transform: translate(3px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    80% { transform: translate(3px, 1px) rotate(1deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -60%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+  }
+
+  @keyframes flashAnim {
+    0% { opacity: 1; background: white; }
+    85% { opacity: 1; background: white; }
+    100% { opacity: 0; background: transparent; }
+  }
+
+  .flash-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: white;
+    z-index: 10000;
+    display: none;
+    pointer-events: none;
+  }
+  
+  @keyframes megaShake{
+
+0%{transform:translate(2px,1px);}
+10%{transform:translate(-3px,-2px);}
+20%{transform:translate(5px,2px);}
+30%{transform:translate(-5px,1px);}
+40%{transform:translate(3px,-1px);}
+50%{transform:translate(-2px,2px);}
+60%{transform:translate(5px,1px);}
+70%{transform:translate(-4px,-2px);}
+80%{transform:translate(2px,3px);}
+90%{transform:translate(-3px,1px);}
+100%{transform:translate(2px,-1px);}
+
+}
+
+.bg-animation{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.bubble{
+position:absolute;
+bottom:-120px;
+width:120px;
+height:120px;
+border-radius:50%;
+background:rgba(255,255,255,0.05);
+filter:blur(4px);
+animation:float 18s linear infinite;
+}
+
+.bubble:nth-child(1){
+left:10%;
+width:80px;
+height:80px;
+animation-duration:14s;
+}
+
+.bubble:nth-child(2){
+left:30%;
+animation-duration:20s;
+}
+
+.bubble:nth-child(3){
+left:55%;
+width:160px;
+height:160px;
+animation-duration:24s;
+}
+
+.bubble:nth-child(4){
+left:75%;
+width:100px;
+height:100px;
+animation-duration:18s;
+}
+
+.bubble:nth-child(5){
+left:90%;
+width:70px;
+height:70px;
+animation-duration:12s;
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0) scale(1);
+opacity:0;
+}
+
+10%{
+opacity:1;
+}
+
+100%{
+transform:translateY(-120vh) scale(1.3);
+opacity:0;
+}
+
+}
+</style>
+</head>
+
+<body>
+  
+  <!-- BG ANIMATION -->
+<div class="bg-animation">
+
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+
+</div>
+
+<audio id="bgm" autoplay>
+  <source src="super-boss.mp3" type="audio/mpeg">
+</audio>
+
+ <audio id="correctSound">
+  <source src="success.wav" type="audio/wav">
+</audio>
+
+<audio id="wrongSound">
+  <source src="error.wav" type="audio/wav">
+</audio>
+
+<div id="flash-screen" class="flash-overlay"></div>
+
+<div id="boss-alert" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:#ff4444; font-size:45px; font-weight:900; z-index:9999; display:none; text-shadow: 4px 4px #000; pointer-events:none; text-align:center; font-family: 'Arial Black', sans-serif; line-height: 1;">
+  BOSS SKILL:<br><span id="skill-name" style="font-size:60px;">TIME SLASH!</span>
+  <div id="skill-sub" style="font-size:20px; color:white;">-2 MENIT</div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <h1>SUPER BOSS MODE</h1>
+    <div class="sub">HP 1500 • 30 Soal Acak • 10 Menit</div>
+  </div>
+
+  <div class="box">
+    <div class="status" id="timer" style="font-size: 28px;">10:00</div>
+    
+    <div id="boss-speech" style="text-align:center; font-weight:bold; color:#f87171; height:25px; margin-top:10px; font-style:italic;">
+      "Belajar lgi aj dekk"
+    </div>
+
+    <div class="hpbar">
+      <div class="hpfill" id="hp"></div>
+    </div>
+
+    <div class="status" id="hptext">Boss HP: 1500</div>
+  </div>
+
+  <div class="box">
+    <div class="question" id="question">Menyiapkan tantangan...</div>
+    <div class="answers" id="answers"></div>
+  </div>
+
+  <script src="mtk-super-boss-quiz.js"></script>
+  <script src="bindo-super-boss-quiz.js"></script>
+  <script src="bing-super-boss-quiz.js"></script>
+  <script src="ipa-super-boss-quiz.js"></script>
+  <script src="pai-super-boss-quiz.js"></script>
+</div>
+
+<script>
+// ================= INIT =================
+let quiz = [];
+let index = 0;
+let bossHP = 1500;
+const MAX_HP = 1500;
+const DAMAGE = 50; 
+let time = 600; 
+let timer;
+let enrageTriggered = false;
+let flashTriggered = false;
+ let earthquakeTriggered = false;
+ let suddenMathInterval;
+ let heartTriggered = false;
+
+// ================= LOAD & MIX SOAL =================
+function startGame(){
+  const data = {
+    mtk: typeof mtkSuperBoss !== 'undefined' ? mtkSuperBoss : [],
+    bindo: typeof bindoSuperBoss !== 'undefined' ? bindoSuperBoss : [],
+    bing: typeof bingSuperBoss !== 'undefined' ? bingSuperBoss : [],
+    ipa: typeof ipaSuperBoss !== 'undefined' ? ipaSuperBoss : [],
+    pai: typeof paiSuperBoss !== 'undefined' ? paiSuperBoss : []
+  };
+
+  let combinedPool = [];
+  Object.keys(data).forEach(key => {
+    if(data[key].length > 0) {
+      let shuffled = data[key].sort(() => Math.random() - 0.5);
+      combinedPool = [...combinedPool, ...shuffled.slice(0, 6)];
+    }
+  });
+
+  quiz = combinedPool.sort(() => Math.random() - 0.5);
+
+// ================= SUDDEN MATH LOOP =================
+
+suddenMathInterval =
+setInterval(()=>{
+
+suddenMath();
+
+},80000);
+  updateHPUI();
+  startTimer();
+  showQuestion();
+}
+
+// ================= TIMER =================
+function startTimer(){
+  timer = setInterval(() => {
+    time--;
+    let m = Math.floor(time / 60);
+    let s = time % 60;
+    document.getElementById("timer").innerText = `${m}:${s.toString().padStart(2,"0")}`;
+
+    if(time <= 0){
+      clearInterval(timer);
+      saveAndExit(false, "Waktu habis! Boss tertawa melihat kelambatanmu.");
+    }
+  }, 1000);
+}
+
+// ================= SHOW QUESTION =================
+function showQuestion(){
+  if(index >= quiz.length){
+    endGame(bossHP <= 0);
+    return;
+  }
+
+  let q = quiz[index];
+  document.getElementById("question").innerText = q.q;
+
+  let box = document.getElementById("answers");
+  box.innerHTML = "";
+
+  // Simpan teks jawaban benar asli
+  const correctText = q.a[q.correct];
+
+  // Acak pilihan jawaban
+  let choices = [...q.a].sort(() => Math.random() - 0.5);
+
+  choices.forEach((opt) => {
+    let btn = document.createElement("button");
+    btn.innerText = opt;
+    btn.onclick = () => check(opt === correctText);
+    box.appendChild(btn);
+  });
+}
+
+// ================= CHECK ANSWER & SKILLS =================
+function check(isCorrect){
+  const answersBox = document.getElementById("answers");
+
+  if(isCorrect){
+    correctSound.currentTime = 0;
+    correctSound.play();
+    bossHP -= DAMAGE;
+    // ================= HEART ATTACK =================
+
+if(bossHP < 300 && !heartTriggered){
+
+heartTriggered = true;
+
+triggerAlert(
+"FINAL PHASE",
+"HEART ATTACK MODE"
+);
+
+// bg merah gelap
+document.body.style.background =
+"linear-gradient(135deg,#3f0000,#1a0000)";
+
+// timer merah kedip
+document.getElementById("timer")
+.style.color = "#ff0000";
+
+document.getElementById("timer")
+.style.animation =
+"flashAnim 0.5s infinite";
+
+// tombol merah
+document.querySelectorAll("button")
+.forEach(btn=>{
+
+btn.style.background = "#dc2626";
+
+btn.style.transform = "scale(1.08)";
+
+});
+
+// musik makin cepat
+bgm.playbackRate = 1.5;
+
+}
+    if(bossHP < 0) bossHP = 0;
+    
+    // ================= EARTHQUAKE =================
+
+if(bossHP < 1000 && !earthquakeTriggered){
+
+earthquakeTriggered = true;
+
+triggerAlert(
+"BOSS SKILL:",
+"EARTHQUAKE MODE"
+);
+
+document.body.style.animation =
+"megaShake 0.12s infinite";
+
+setTimeout(()=>{
+
+document.body.style.animation = "";
+
+},10000);
+
+}
+
+    // --- SKILL 1: TIME SLASH (HP <= 750) ---
+    if(bossHP <= 750 && !enrageTriggered){
+      enrageTriggered = true;
+      time -= 120; 
+      triggerAlert("BOSS SKILL: TIME SLASH!", "-2 MENIT");
+    }
+
+    // --- SKILL 2: FLASHBANG (HP <= 450) ---
+    if(bossHP <= 450 && !flashTriggered){
+      flashTriggered = true;
+      triggerAlert("BOSS SKILL:", "FLASHBANG!!");
+
+      const flash = document.getElementById("flash-screen");
+      flash.style.display = "block";
+      flash.style.animation = "flashAnim 5s forwards";
+
+      setTimeout(() => {
+        flash.style.display = "none";
+        flash.style.animation = "";
+      }, 5000);
+    }
+  } 
+  else {
+    wrongSound.currentTime = 0;
+    wrongSound.play();
+    // --- SKILL 3: INPUT JAMMER (Hukuman Salah) ---
+    answersBox.style.opacity = "0.2";
+    answersBox.style.pointerEvents = "none"; 
+    document.body.style.animation = "shake 0.5s";
+    
+    setTimeout(() => {
+      document.body.style.animation = "";
+      answersBox.style.opacity = "1";
+      answersBox.style.pointerEvents = "auto";
+    }, 1000);
+  }
+
+  updateHPUI();
+  index++;
+
+  if(bossHP <= 0) endGame(true);
+  else if(index >= quiz.length) endGame(false);
+  else showQuestion();
+}
+
+// ================= UI HELPERS =================
+function updateHPUI() {
+  const hpPercent = (bossHP / MAX_HP) * 100;
+  const speech = document.getElementById("boss-speech");
+  const fill = document.getElementById("hp");
+
+  fill.style.width = hpPercent + "%";
+  document.getElementById("hptext").innerText = `Boss HP: ${bossHP}`;
+
+  if (hpPercent <= 20) {
+    speech.innerText = '"Sialann!!"';
+    fill.style.background = "#ef4444";
+  } else if (hpPercent <= 50) {
+    speech.innerText = '"gabakal bisa kacung"';
+    fill.style.background = "#eab308";
+  } else {
+    speech.innerText = '"Belajar lgi aj dekk"';
+    fill.style.background = "#22c55e";
+  }
+}
+
+function triggerAlert(title, sub){
+  const alertBox = document.getElementById("boss-alert");
+  document.getElementById("skill-name").innerText = title;
+  document.getElementById("skill-sub").innerText = sub;
+  
+  alertBox.style.display = "block";
+  alertBox.style.animation = "fadeInOut 1.5s forwards";
+  
+  document.body.style.background = "#7f1d1d"; 
+  document.body.style.animation = "shake 0.8s infinite";
+  document.getElementById("timer").style.color = "#ff4444";
+
+  setTimeout(() => {
+    document.body.style.background = "linear-gradient(135deg,#0f172a,#1e1b2e)";
+    document.body.style.animation = "";
+    document.getElementById("timer").style.color = "#cbd5e1";
+    alertBox.style.display = "none";
+  }, 1500);
+}
+
+// ================= SUDDEN MATH ============
+function suddenMath(){
+
+let a =
+Math.floor(Math.random()*20)+1;
+
+let b =
+Math.floor(Math.random()*20)+1;
+
+let correctAnswer = a * b;
+
+// ================= START TIMER =================
+
+let start =
+Date.now();
+
+let user =
+prompt(
+`⚠ SUDDEN MATH ⚠
+
+${a} × ${b} = ?
+
+(15 detik)`
+);
+
+let end =
+Date.now();
+
+let seconds =
+(end - start) / 1000;
+
+// ================= SKIP / TIMEOUT =================
+
+if(
+
+user === null ||
+user.trim() === "" ||
+seconds > 15
+
+){
+
+time -= 20;
+
+if(time < 0){
+time = 0;
+}
+
+triggerAlert(
+"TIME OUT!",
+"-20 DETIK"
+);
+
+return;
+
+}
+
+// ================= BENAR =================
+
+if(parseInt(user) === correctAnswer){
+
+time += 20;
+
+triggerAlert(
+"BONUS TIME!",
+"+20 DETIK"
+);
+
+}
+
+// ================= SALAH =================
+
+else{
+
+time -= 20;
+
+if(time < 0){
+time = 0;
+}
+
+triggerAlert(
+"WRONG ANSWER!",
+"-20 DETIK"
+);
+
+}
+
+}
+// ================= END GAME =================
+function endGame(win){
+  clearInterval(suddenMathInterval);
+  clearInterval(timer);
+  
+  if(win){
+  }
+  
+  let msg = win ? "Boss berhasil dikalahkan!" : "Soal habis, tapi Boss masih berdiri. Skill issue!";
+  saveAndExit(win, msg);
+}
+
+function saveAndExit(win, message){
+  clearInterval(suddenMathInterval);
+  stopMusic();
+  let reward = win ? 500 : 30;
+  let coin = parseInt(localStorage.getItem("totalCoins")) || 0;
+  
+  localStorage.setItem("totalCoins", coin + reward);
+  localStorage.setItem("result", JSON.stringify({ win, reward, message, bossHP }));
+
+  window.location.href = "result.html";
+}
+
+ // ================= BGM =================
+
+const bgm =
+document.getElementById("bgm");
+
+ const correctSound =
+document.getElementById("correctSound");
+
+const wrongSound =
+document.getElementById("wrongSound");
+
+correctSound.volume = 0.6;
+wrongSound.volume = 0.6;
+
+bgm.volume = 0.6;
+
+// autoplay fix
+document.body.addEventListener("click",()=>{
+
+bgm.play();
+
+},{ once:true });
+
+// repeat 9x
+let playCount = 1;
+
+bgm.addEventListener("ended",()=>{
+
+playCount++;
+
+if(playCount <= 9){
+
+bgm.currentTime = 0;
+bgm.play();
+
+}
+
+});
+
+// stop music
+function stopMusic(){
+
+bgm.pause();
+
+bgm.currentTime = 0;
+
+}
+
+ /* ================= THEME SYSTEM ================= */
+
+const themes = {
+
+common:{
+bg:"linear-gradient(135deg,#1e293b,#0f172a)",
+bubble:"rgba(255,255,255,0.05)"
+},
+
+rare:{
+bg:"linear-gradient(135deg,#7f1d1d,#dc2626)",
+bubble:"rgba(255,80,80,0.15)"
+},
+
+epic:{
+bg:"linear-gradient(135deg,#4c1d95,#7c3aed)",
+bubble:"rgba(168,85,247,0.15)"
+},
+
+legendary:{
+bg:"linear-gradient(135deg,#0f172a,#06b6d4)",
+bubble:"rgba(34,211,238,0.15)"
+},
+
+mythic:{
+bg:"linear-gradient(135deg,#78350f,#fbbf24)",
+bubble:"rgba(251,191,36,0.18)"
+}
+
+};
+
+function applyTheme(){
+
+let equipped =
+localStorage.getItem("equippedTheme") || "common";
+
+let theme =
+themes[equipped];
+
+if(!theme) return;
+
+/* body bg */
+
+document.body.style.background =
+theme.bg;
+
+/* bubble */
+
+document
+.querySelectorAll(".bubble")
+.forEach(b=>{
+
+b.style.background =
+theme.bubble;
+
+}) ;
+
+}
+
+
+// Jalankan Gamenya
+applyTheme();
+startGame();
+</script>
+</body>
+</html>

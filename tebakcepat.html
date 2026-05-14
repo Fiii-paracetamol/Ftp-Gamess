@@ -1,0 +1,502 @@
+ <!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tebak Cepat</title>
+
+<script src="mtk-hard.js"></script>
+<script src="bindo-hard.js"></script>
+<script src="bing-hard.js"></script>
+<script src="ipa-hard.js"></script>
+<script src="pai-hard.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial;
+background:#0f172a;
+background-size:cover;
+background-attachment:fixed;
+transition:0.4s;
+color:white;
+padding:20px;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+.top{
+margin-bottom:20px;
+}
+
+.info{
+display:flex;
+justify-content:space-between;
+margin-top:10px;
+color:#cbd5e1;
+}
+
+#timer{
+font-size:24px;
+font-weight:bold;
+color:#fbbf24;
+margin-top:10px;
+}
+
+.quiz-box{
+background:rgba(255,255,255,0.05);
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+animation:fade .3s ease;
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(10px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.option{
+background:#1e293b;
+padding:15px;
+border-radius:14px;
+margin-top:12px;
+cursor:pointer;
+transition:.2s;
+}
+
+.option:hover{
+background:#334155;
+transform:scale(1.02);
+}
+
+.correct{
+background:#16a34a !important;
+}
+
+.wrong{
+background:#dc2626 !important;
+}
+
+.next{
+width:100%;
+margin-top:20px;
+padding:14px;
+border:none;
+border-radius:14px;
+background:#2563eb;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.coin-float{
+position:fixed;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+font-size:30px;
+font-weight:bold;
+color:#fbbf24;
+animation:floatUp 1s ease forwards;
+pointer-events:none;
+}
+
+@keyframes floatUp{
+0%{
+opacity:0;
+transform:translate(-50%,0);
+}
+20%{
+opacity:1;
+}
+100%{
+opacity:0;
+transform:translate(-50%,-150px);
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="top">
+
+<h1>⚡ Tebak Cepat</h1>
+
+<p>
+10 soal random semua mapel.
+30 detik per soal.
++30 coin tiap benar.
+</p>
+
+<div class="info">
+
+<div id="score">
+Score: 0
+</div>
+
+<div id="coins">
+Coins: 0
+</div>
+
+</div>
+
+<div id="timer">
+00:30
+</div>
+
+</div>
+
+<div class="quiz-box">
+
+<p id="number"></p>
+
+<h2 id="question"></h2>
+
+<div id="options"></div>
+
+<button class="next" onclick="nextQuestion()">
+Next
+</button>
+
+</div>
+
+<script>
+
+// ================= SOUND =================
+
+const clickSound = new Audio("click.wav");
+const successSound = new Audio("success.wav");
+const errorSound = new Audio("error.wav");
+const coinSound = new Audio("coin.wav");
+
+function playSound(sound){
+
+sound.currentTime = 0;
+sound.play();
+
+}
+
+// ================= RANDOM =================
+
+function getRandom(arr,count){
+
+return [...arr]
+.sort(()=>Math.random()-0.5)
+.slice(0,count);
+
+}
+
+// ================= QUESTIONS =================
+
+let questions = [
+
+...getRandom(mtkHardQuestions,2),
+...getRandom(bindoHardQuestions,2),
+...getRandom(bingHardQuestions,2),
+...getRandom(ipaHardQuestions,2),
+...getRandom(paiHardQuestions,2)
+
+];
+
+questions = questions.sort(
+()=>Math.random()-0.5
+);
+
+// ================= PLAYER =================
+
+let totalCoins =
+parseInt(localStorage.getItem("totalCoins"))
+|| 0;
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+let timeLeft = 30;
+let timer;
+
+ let finished = false;
+
+const player =
+localStorage.getItem("player");
+
+// ================= UI =================
+
+function updateUI(){
+
+document.getElementById("score").innerText =
+"Score: " + score;
+
+document.getElementById("coins").innerText =
+"Coins: " + totalCoins;
+
+}
+
+// ================= TIMER =================
+
+function startTimer(){
+
+clearInterval(timer);
+
+timer = setInterval(()=>{
+
+if(finished) return;
+
+timeLeft--;
+
+let m = "00";
+
+let s = timeLeft
+.toString()
+.padStart(2,"0");
+
+document.getElementById("timer").innerText =
+`${m}:${s}`;
+
+if(timeLeft <= 0){
+
+clearInterval(timer);
+
+current++;
+
+if(current < questions.length){
+
+loadQuestion();
+
+}else{
+
+endGame();
+
+}
+
+}
+
+},1000);
+
+}
+
+// ================= LOAD =================
+
+function loadQuestion(){
+
+answered = false;
+
+timeLeft = 30;
+
+startTimer();
+
+let q = questions[current];
+
+document.getElementById("number").innerText =
+`Soal ${current+1}/10`;
+
+document.getElementById("question").innerText =
+q.question;
+
+let box =
+document.getElementById("options");
+
+box.innerHTML = "";
+
+q.options.forEach(opt=>{
+
+let div =
+document.createElement("div");
+
+div.className = "option";
+
+div.innerText = opt;
+
+div.onclick = ()=>checkAnswer(opt);
+
+box.appendChild(div);
+
+});
+
+}
+
+// ================= CHECK =================
+
+function checkAnswer(selected){
+
+if(answered) return;
+
+answered = true;
+
+playSound(clickSound);
+
+let q = questions[current];
+
+document.querySelectorAll(".option")
+.forEach(o=>{
+
+o.style.pointerEvents = "none";
+
+if(o.innerText === q.answer){
+o.classList.add("correct");
+}
+
+if(
+o.innerText === selected &&
+selected !== q.answer
+){
+o.classList.add("wrong");
+}
+
+});
+
+if(selected === q.answer){
+
+playSound(successSound);
+playSound(coinSound);
+
+score++;
+
+totalCoins += 30;
+
+localStorage.setItem(
+"totalCoins",
+totalCoins
+);
+
+updateUI();
+
+showCoin(30);
+
+}else{
+
+playSound(errorSound);
+
+}
+
+}
+
+// ================= NEXT =================
+
+function nextQuestion(){
+
+playSound(clickSound);
+
+if(!answered) return;
+
+current++;
+
+if(current < questions.length){
+
+loadQuestion();
+
+}else{
+
+endGame();
+
+}
+
+}
+
+// ================= FLOAT =================
+
+function showCoin(amount){
+
+let div =
+document.createElement("div");
+
+div.className = "coin-float";
+
+div.innerText =
+`+${amount} 🪙`;
+
+document.body.appendChild(div);
+
+setTimeout(()=>{
+div.remove();
+},1000);
+
+}
+
+// ================= END =================
+
+function endGame(){
+
+if(finished) return;
+
+finished = true;
+
+clearInterval(timer);
+
+localStorage.setItem(
+"fastCooldown_"+player,
+Date.now()
+);
+
+alert(
+`Game selesai!\n\nScore: ${score}\nCoins: ${totalCoins}`
+);
+
+window.location.href =
+"dashboard.html";
+
+}
+
+ // ================= THEME =================
+
+function applyTheme(){
+
+const themes = {
+
+common:
+"linear-gradient(135deg,#1e293b,#0f172a)",
+
+rare:
+"linear-gradient(135deg,#7f1d1d,#dc2626)",
+
+epic:
+"linear-gradient(135deg,#4c1d95,#7c3aed)",
+
+legendary:
+"linear-gradient(135deg,#0f172a,#06b6d4)",
+
+mythic:
+"linear-gradient(135deg,#78350f,#fbbf24)"
+
+};
+
+let equipped =
+localStorage.getItem("equippedTheme");
+
+if(themes[equipped]){
+
+document.body.style.background =
+themes[equipped];
+
+}
+
+}
+
+// ================= START =================
+
+ applyTheme();
+
+updateUI();
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>

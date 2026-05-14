@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FTP Game Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  overflow: hidden;
+  color: white;
+  transition: 0.5s;
+}
+
+/* Glow Background */
+.blob {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  filter: blur(130px);
+  opacity: 0.3;
+  animation: float 7s ease-in-out infinite;
+  z-index: 1;
+}
+.blob:nth-child(1) { top: -100px; left: -100px; background: #3b82f6; }
+.blob:nth-child(2) { bottom: -120px; right: -120px; background: #a855f7; animation-delay: 2s; }
+
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(40px); } }
+
+/* Card Style */
+.login-box {
+  position: relative;
+  z-index: 2;
+  width: 340px;
+  padding: 35px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+h2 { font-weight: 600; letter-spacing: 4px; margin-bottom: 5px; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+.sub { font-size: 11px; opacity: 0.6; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Input Elements */
+.input-group { position: relative; margin-bottom: 12px; }
+input {
+  width: 100%;
+  padding: 13px 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.07);
+  color: white;
+  outline: none;
+  transition: 0.3s;
+}
+input:focus { border-color: #3b82f6; background: rgba(255, 255, 255, 0.12); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+
+/* Eye Icon */
+.eye-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  opacity: 0.4;
+  transition: 0.3s;
+  user-select: none;
+}
+.eye-btn:hover { opacity: 1; }
+
+/* Button Login */
+button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  letter-spacing: 1px;
+}
+button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); }
+button:active { transform: translateY(0); }
+
+/* Feedbacks */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-4px); }
+}
+.error-shake { animation: shake 0.3s ease-in-out; border-color: #ff4757 !important; }
+
+.hint { margin-top: 15px; font-size: 11px; opacity: 0.5; transition: 0.3s; }
+.hint-error { color: #ff4757; opacity: 1; font-weight: bold; }
+
+.emoji-run {
+  position: absolute;
+  top: -28px;
+  left: 10px;
+  font-size: 24px;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+
+.loading { opacity: 0.5; pointer-events: none; cursor: wait; }
+
+/* Glitch Effect */
+@keyframes glitch {
+  0% { text-shadow: 2px 0 0 red, -2px 0 0 blue; }
+  25% { text-shadow: -2px 0 0 red, 2px 0 0 blue; }
+  50% { text-shadow: 2px -1px 0 red, -1px 2px 0 blue; }
+  100% { text-shadow: 0 0 0 red, 0 0 0 blue; }
+}
+.glitch-text { animation: glitch 0.2s infinite; color: #ff4757 !important; }
+
+ /* Container Loading Bar */
+.loader-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin-top: 15px;
+  display: none; /* Sembunyi dulu */
+  overflow: hidden;
+}
+
+/* Isinya yang jalan */
+.loader-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #a855f7);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+  transition: width 0.1s linear;
+}
+
+
+</style>
+</head>
+<body>
+
+<div class="blob"></div>
+<div class="blob"></div>
+
+<div class="login-box">
+  <div class="emoji-run" id="emoji">😲</div>
+  <h2 id="title">FTP GAME</h2>
+  <div class="sub">Verify your identity</div>
+
+  <div class="input-group">
+    <input id="nick" type="text" placeholder="Nickname" autocomplete="off">
+  </div>
+
+  <div class="input-group">
+    <input id="pass" type="password" placeholder="Password">
+    <span class="eye-btn" onclick="togglePass()">👁️</span>
+  </div>
+
+  <button id="loginBtn">ACCESS SYSTEM</button>
+
+<!-- Tambahin ini -->
+<div class="loader-container" id="loaderContainer">
+  <div class="loader-bar" id="loaderBar"></div>
+</div>
+
+
+  <div class="hint" id="hintBox">Jangan asal login, nanti nyangkut 🗿</div>
+</div>
+
+<script>
+const users = [
+  { nickname: "Aprel", password: "APR482" }, 
+  { nickname: "Adel", password: "ADL193" },
+  { nickname: "Arta", password: "ART728" }, 
+  { nickname: "Farel", password: "FRL615" },
+  { nickname: "Selo", password: "SEL904" }, 
+  { nickname: "Alex", password: "ALX377" },
+  { nickname: "Ozi", password: "OZI542" }, 
+  { nickname: "Dafit", password: "DFT831" },
+  { nickname: "Fian", password: "FIN274" }, 
+  { nickname: "Afnan", password: "AFN663" },
+  { nickname: "Aldi", password: "ALD159" }, 
+  { nickname: "Roofi", password: "KingFii"}, 
+  { nickname: "Novel", password: "NVL786" }, 
+  { nickname: "Mila", password: "MLA480"}, 
+  { nickname: "Olin", password: "OLN255" }, 
+  { nickname: "Risa", password: "RSA991" },
+  { nickname: "Sil", password: "SIL607" }, 
+  { nickname: "Zahra", password: "ZHR348" }, 
+  { nickname: "Maysun", password:"MYSN290"}
+];
+
+const emoji = document.getElementById("emoji");
+const box = document.querySelector(".login-box");
+const btn = document.getElementById("loginBtn");
+const nickInput = document.getElementById("nick");
+const passInput = document.getElementById("pass");
+const hintBox = document.getElementById("hintBox");
+const title = document.getElementById("title");
+
+let failCount = 0;
+
+// --- LOGIC LOGIN DENGAN LOADING BAR ---
+btn.addEventListener("click", () => {
+  const nickVal = nickInput.value.trim();
+  const passVal = passInput.value.trim();
+
+  // 1. Validasi Awal
+  if (!nickVal || !passVal) {
+    showError(true, true, "Lengkapin dulu datanya, cil! 🗿");
+    return;
+  }
+
+  // 2. Persiapan Visual Loading
+  btn.style.display = "none"; // Sembunyiin tombol
+  const loaderContainer = document.getElementById("loaderContainer");
+  const loaderBar = document.getElementById("loaderBar");
+  
+  loaderContainer.style.display = "block"; // Munculin bar
+  loaderBar.style.width = "0%";
+  document.body.classList.add("loading");
+
+  let progress = 0;
+
+  // 3. Animasi Progress Bar (Simulasi Connecting)
+  const loadingInterval = setInterval(() => {
+    progress += Math.random() * 12; // Naiknya random biar realistik
+    if (progress > 100) progress = 100;
+    
+    loaderBar.style.width = progress + "%";
+
+    if (progress >= 100) {
+      clearInterval(loadingInterval);
+      
+      // 4. Cek Database Setelah Loading Kelar
+      const userMatch = users.find(u => u.nickname.toLowerCase() === nickVal.toLowerCase());
+      const isSuccess = userMatch && userMatch.password === passVal;
+
+      if (isSuccess) {
+        // --- LOGIN SUKSES ---
+        loaderBar.style.background = "#2ed573";
+        hintBox.innerText = "ACCESS GRANTED. Welcome, " + userMatch.nickname;
+        localStorage.setItem("player", userMatch.nickname);
+        
+        document.body.style.filter = "blur(15px) brightness(0.5)";
+        box.style.transform = "scale(0.8)";
+        box.style.opacity = "0";
+
+        setTimeout(() => { 
+          window.location.href = "dashboard.html"; 
+        }, 700);
+
+      } else {
+        // --- LOGIN GAGAL ---
+        failCount++;
+        document.body.classList.remove("loading");
+        
+        // Balikin tampilan tombol
+        btn.style.display = "block";
+        btn.innerText = "ACCESS DENIED";
+        btn.style.background = "#ff4757";
+        loaderContainer.style.display = "none";
+
+        const nickErr = !userMatch;
+        const passErr = userMatch && userMatch.password !== passVal;
+        
+        let msg = nickErr ? "Nickname kaga ada di database! 🤨" : "Password salah total! 🔑";
+        if (failCount >= 3) msg = "SISTEM KE-HACK?! BERHENTI! 👺";
+
+        showError(nickErr, passErr, msg);
+
+        // Update Emoji & Efek Glitch
+        if (failCount === 1) emoji.textContent = "🤨";
+        else if (failCount === 2) emoji.textContent = "😠";
+        else if (failCount >= 3) {
+          emoji.textContent = "👺";
+          title.classList.add("glitch-text");
+          document.body.style.background = "radial-gradient(circle at top, #450a0a, #020617)";
+        }
+
+        // Reset tombol ke teks awal
+        setTimeout(() => {
+          btn.innerText = "ACCESS SYSTEM";
+          btn.style.background = "";
+        }, 1500);
+      }
+    }
+  }, 80); // Speed loading (makin kecil makin cepet)
+});
+
+
+function showError(n, p, msg) {
+  if (n) {
+    nickInput.classList.add("error-shake");
+    setTimeout(() => nickInput.classList.remove("error-shake"), 400);
+  }
+  if (p) {
+    passInput.classList.add("error-shake");
+    setTimeout(() => passInput.classList.remove("error-shake"), 400);
+    passInput.value = "";
+  }
+  box.style.animation = "shake 0.3s";
+  hintBox.innerText = msg;
+  hintBox.classList.add("hint-error");
+}
+
+function togglePass() {
+  passInput.type = passInput.type === "password" ? "text" : "password";
+}
+
+// Emoji Patrol
+let dir = 1; let p = 0;
+function move() {
+  const max = box.offsetWidth - 40;
+  p += dir * 1.2;
+  if (p >= max || p <= 0) { dir *= -1; emoji.style.transform = `scaleX(${dir})`; }
+  emoji.style.left = p + "px";
+  requestAnimationFrame(move);
+}
+move();
+</script>
+</body>
+</html>

@@ -1,0 +1,705 @@
+<!DOCTYPE html>  
+<html 
+lang="id">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>Boss Battle</title> 
+<style>  
+
+ *{
+box-sizing:border-box;
+}
+  
+body{  
+margin:0;  
+font-family:Arial;  
+background:#0f172a;  
+color:white;  
+padding:20px;  
+}  
+  
+.box{  
+background:#1e293b;  
+padding:20px;  
+border-radius:20px;  
+margin-bottom:20px;  
+}  
+  
+.hpbar{  
+width:100%;  
+height:25px;  
+background:#334155;  
+border-radius:999px;  
+overflow:hidden;  
+margin-top:10px;  
+}  
+  
+.hpfill{  
+height:100%;  
+transition:0.3s;  
+}  
+  
+#bossFill{  
+background:#ef4444;  
+width:100%;  
+}  
+  
+#playerFill{  
+background:#22c55e;  
+width:100%;  
+}  
+  
+button{  
+width:100%;  
+padding:15px;  
+margin-top:10px;  
+border:none;  
+border-radius:15px;  
+background:#2563eb;  
+color:white;  
+font-weight:bold;  
+cursor:pointer;  
+}  
+  
+button:hover{  
+opacity:0.9;  
+}  
+  
+#timer{  
+font-size:20px;  
+font-weight:bold;  
+margin-bottom:15px;  
+}  
+
+.flash-red {
+  background: rgba(255,0,0,0.25) !important;
+}
+
+@keyframes flashRed {
+  0% { background: #0f172a; }
+  50% { background: rgba(255,0,0,0.25); }
+  100% { background: #0f172a; }
+}
+  
+  .shake {
+  animation: shake 0.2s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+  
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+padding:20px;
+position:relative;
+overflow-x:hidden;
+min-height:100vh;
+}
+
+.bg-animation{
+position:fixed;
+inset:0;
+overflow:hidden;
+z-index:0;
+pointer-events:none;
+}
+
+.box,
+#timer{
+position:relative;
+z-index:1;
+}}
+
+/* Bubble */
+.bubble{
+position:absolute;
+bottom:-120px;
+width:120px;
+height:120px;
+border-radius:50%;
+background:rgba(255,255,255,0.05);
+filter:blur(4px);
+animation:float 18s linear infinite;
+}
+
+.bubble:nth-child(1){
+left:10%;
+width:80px;
+height:80px;
+animation-duration:14s;
+}
+
+.bubble:nth-child(2){
+left:30%;
+animation-duration:20s;
+}
+
+.bubble:nth-child(3){
+left:55%;
+width:160px;
+height:160px;
+animation-duration:24s;
+}
+
+.bubble:nth-child(4){
+left:75%;
+width:100px;
+height:100px;
+animation-duration:18s;
+}
+
+.bubble:nth-child(5){
+left:90%;
+width:70px;
+height:70px;
+animation-duration:12s;
+}
+
+@keyframes float{
+0%{
+transform:translateY(0) scale(1);
+opacity:0;
+}
+
+10%{
+opacity:1;
+}
+
+100%{
+transform:translateY(-120vh) scale(1.3);
+opacity:0;
+}
+}
+  
+</style>  
+</head>  
+
+<body>  
+
+ <!-- BG ANIMATION -->
+<div class="bg-animation">
+
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+
+</div>
+
+<div class="box">  
+<h2 id="bossName">Boss</h2> 
+<p>  
+❤️ Boss HP:  
+<span id="bossHpText">  
+100  
+</span>  
+</p>  <div class="hpbar">  
+<div id="bossFill" class="hpfill"></div>  
+</div>  </div>  <div class="box">  <h2>Player HP</h2>  <p>  
+💚 HP:  
+<span id="playerHpText">  
+100  
+</span>  
+</p>  
+<div class="hpbar">  
+<div id="playerFill" class="hpfill"></div>  
+</div>  
+</div>  
+<div id="timer">  
+08:00  
+</div>  
+<div class="box"> 
+<h2 id="question">  
+Soal muncul disini  
+</h2>  
+<div id="answers">
+</div>  
+</div>  
+<script src="mtk-boss-quiz.js"></script> 
+<script src="bindo-boss-quiz.js"></script>
+<script src="bing-boss-quiz.js"></script>
+<script src="ipa-boss-quiz.js"></script>
+<script src="pai-boss-quiz.js"></script> 
+
+<script>  
+
+// =============== SOUND ================
+
+ const successSound = new Audio("success.wav");
+const errorSound = new Audio("error.wav");
+const bossMusic = new Audio("boss-battle.mp3");
+bossMusic.volume = 0.6;
+bossMusic.loop = true;
+
+ function startMusic(){
+  if (bossMusic.paused) {
+    bossMusic.currentTime = 0;
+    bossMusic.play();
+  }
+}
+
+function stopMusic(){
+  bossMusic.pause();
+  bossMusic.currentTime = 0;
+}
+
+// ================ ACAK PILIHAN =========  
+  
+ function shuffleArray(arr){  
+  
+for(let i = arr.length - 1; i > 0; i--){  
+  
+let j = Math.floor(Math.random() * (i + 1));  
+  
+[arr[i], arr[j]] = [arr[j], arr[i]];  
+  
+}  
+  
+return arr;  
+  
+}  
+  
+// ================= DATA =================  
+  
+const boss =  
+localStorage.getItem("selectedBoss");  
+  
+const bossNames = {  
+  
+mtk:"Raja Integral",  
+bindo:"Kata Berjalan",  
+bing:"Lord Grammar",  
+ipa:"Mutan Kimia",  
+pai:"Penjaga Hikmah"  
+  
+};  
+  
+document.getElementById("bossName")  
+.innerText =  
+bossNames[boss];  
+  
+// ================= AMBIL SOAL =================  
+  
+let allQuestions = [];  
+  
+if(boss === "mtk"){  
+allQuestions = [...mtkBossQuiz];  
+}  
+  
+if(boss === "bindo"){  
+allQuestions = [...bindoBossQuiz];  
+}  
+  
+if(boss === "bing"){  
+allQuestions = [...bingBossQuiz];  
+}  
+  
+if(boss === "ipa"){  
+allQuestions = [...ipaBossQuiz];  
+}  
+  
+if(boss === "pai"){  
+allQuestions = [...paiBossQuiz];  
+}  
+  
+// acak soal  
+allQuestions.sort(()=>Math.random()-0.5);  
+  
+// ambil 5 soal  
+let questions =  
+allQuestions.slice(0,5);  
+  
+// ================= HP =================  
+  
+let bossHp = 100;  
+let playerHp = 100; 
+ let bossSkillUsed = false;
+ let wrongStreak = 0;
+ 
+function bossSkill(){
+  if(bossSkillUsed) return;
+
+  bossSkillUsed = true;
+
+  // damage ke player
+  playerHp -= 20;
+  if(playerHp < 0) playerHp = 0;
+
+  // kurangi waktu 60 detik
+  time -= 60;
+  if(time < 0) time = 0;
+
+  alert("⚠️⚠️ Boss pakai skill! HP kamu -20 & waktu -1 menit⚠️⚠️");
+
+  updateHp();
+}
+
+function updateHp(){  
+  
+document.getElementById("bossHpText")  
+.innerText = bossHp;  
+  
+document.getElementById("playerHpText")  
+.innerText = playerHp;  
+  
+document.getElementById("bossFill")  
+.style.width =  
+bossHp + "%";  
+  
+document.getElementById("playerFill")  
+.style.width =  
+playerHp + "%";  
+  
+}  
+  
+// ================= SOAL =================  
+  
+let current = 0;  
+  
+function loadQuestion(){  
+  
+if(current >= questions.length){  
+  
+endBattle();  
+  
+return;  
+  
+}  
+  
+let q = questions[current];  
+  
+document.getElementById("question")  
+.innerText = q.q;  
+  
+let ans =  
+document.getElementById("answers");  
+  
+ans.innerHTML = "";  
+  
+// acak jawaban  
+let shuffled =  
+[...q.a]  
+.sort(()=>Math.random()-0.5);  
+  
+shuffled.forEach(opt=>{  
+  
+let btn =  
+document.createElement("button");  
+  
+btn.innerText = opt;  
+  
+btn.onclick = () => {
+  startMusic();
+
+  let isCorrect = (opt === q.a[q.correct]);
+
+  if (isCorrect) {
+    wrongStreak = 0;
+
+    bossHp -= 20;
+    if (bossHp < 0) bossHp = 0;
+
+    if (bossHp <= 60 && !bossSkillUsed) {
+      setTimeout(() => bossSkill(), 300);
+    }
+
+    successSound.currentTime = 0;
+    successSound.play();
+    shakeScreen();
+
+  } else {
+  wrongStreak++;
+
+  errorSound.currentTime = 0;
+  errorSound.play();
+  screenFlash("hit");
+
+  let damage = 20; // base damage
+
+  if (wrongStreak >= 3) {
+    damage = 40; // TOTAL damage, bukan tambahan
+
+    alert("💀 3x salah! Critical counter attack!");
+
+    wrongStreak = 0;
+  }
+
+  playerHp -= damage;
+  if (playerHp < 0) playerHp = 0;
+}
+
+  updateHp();
+
+  if (bossHp <= 0 || playerHp <= 0) {
+    endBattle();
+    return;
+  }
+
+  current++;
+  loadQuestion();
+};
+ans.appendChild(btn);  
+  
+});  
+  
+}  
+  
+ // ================= TIMER =================  
+  
+let time = 480;  
+  
+const timerEl =  
+document.getElementById("timer");  
+  
+const timer = setInterval(()=>{  
+  
+time--;  
+  
+let menit =  
+Math.floor(time / 60);  
+  
+let detik =  
+time % 60;  
+  
+timerEl.innerText =  
+`${menit}:${detik  
+.toString()  
+.padStart(2,"0")}`;  
+  
+if(time <= 0){  
+  
+clearInterval(timer);  
+  
+// player otomatis kalah  
+bossLose();  
+  
+}  
+  
+},1000);  
+  
+// ================= KALAH =================  
+  
+function bossLose(){  
+  
+// tambah coin hiburan 🗿  
+let coin =  
+parseInt(  
+localStorage.getItem("totalCoins")  
+) || 0;  
+  
+coin += 20;  
+  
+localStorage.setItem(  
+"totalCoins",  
+coin  
+);  
+  
+// roast random  
+const roast = [  
+  
+"Kecepetan 500 tahun dek 🗿",  
+  
+"Bossnya aja bingung liat jawaban lu",  
+  
+"8 menit masih kalah. Konsisten juga ya.",  
+  
+"Lord Grammar barusan uninstall bahasa Inggris",  
+  
+"Mutan Kimia nyuruh lu balik praktikum",  
+  
+"Raja Integral senyum tipis lihat skor lu",  
+  
+"Damage lu ke boss kayak cubitan bayi",  
+  
+"Soalnya SMP, reaksinya kayak UTBK final boss",  
+  
+"Penjaga Hikmah kehilangan hikmah",  
+  
+"Skill issue terdeteksi."  
+  
+];  
+  
+let text =  
+roast[  
+Math.floor(  
+Math.random() * roast.length  
+)  
+];  
+  
+// simpan result  
+localStorage.setItem(  
+"bossResult",  
+JSON.stringify({  
+  
+status:"lose",  
+reward:20,  
+message:text  
+  
+})  
+);  
+  
+// pindah halaman  
+window.location.href =  
+"boss-result.html";  
+  
+}  
+  
+ // ================= MENANG =================  
+  
+function bossWin(){  
+  
+let reward = 300;  
+  
+// tambah coin  
+let coin =  
+parseInt(  
+localStorage.getItem("totalCoins")  
+) || 0;  
+  
+coin += reward;  
+  
+localStorage.setItem(  
+"totalCoins",  
+coin  
+);  
+  
+// save result  
+localStorage.setItem(  
+"bossResult",  
+  
+JSON.stringify({  
+  
+status:"win",  
+  
+reward:reward,  
+  
+message:  
+"Boss berhasil dikalahkan. Akhirnya otak dipake juga."  
+  
+})  
+  
+);  
+  
+// pindah halaman  
+window.location.href =  
+"boss-result.html";  
+  
+}  
+  
+// ================= END =================  
+  
+function endBattle(){  
+
+clearInterval(timer);  
+  
+if(bossHp <= 0){  
+  
+bossWin();  
+  
+}else{  
+  
+bossLose();  
+  
+}  
+  
+}  
+  
+// ================= START =================  
+
+updateHp();  
+
+ function shakeScreen(){
+  document.body.classList.add("shake");
+  setTimeout(() => {
+    document.body.classList.remove("shake");
+  }, 200);
+}
+
+ function screenFlash(type){
+
+  document.body.classList.remove("flash-red");
+
+  if(type === "hit"){
+    document.body.classList.add("flash-red");
+
+    setTimeout(()=>{
+      document.body.classList.remove("flash-red");
+    }, 200);
+  }
+
+}
+
+ /* ================= THEME SYSTEM ================= */
+
+const themes = {
+
+common:{
+bg:"linear-gradient(135deg,#1e293b,#0f172a)",
+bubble:"rgba(255,255,255,0.05)"
+},
+
+rare:{
+bg:"linear-gradient(135deg,#7f1d1d,#dc2626)",
+bubble:"rgba(255,80,80,0.15)"
+},
+
+epic:{
+bg:"linear-gradient(135deg,#4c1d95,#7c3aed)",
+bubble:"rgba(168,85,247,0.15)"
+},
+
+legendary:{
+bg:"linear-gradient(135deg,#0f172a,#06b6d4)",
+bubble:"rgba(34,211,238,0.15)"
+},
+
+mythic:{
+bg:"linear-gradient(135deg,#78350f,#fbbf24)",
+bubble:"rgba(251,191,36,0.18)"
+}
+
+};
+
+function applyTheme(){
+
+let equipped =
+localStorage.getItem("equippedTheme") || "common";
+
+let theme =
+themes[equipped];
+
+if(!theme) return;
+
+/* body bg */
+
+document.body.style.background =
+theme.bg;
+
+/* bubble */
+
+document
+.querySelectorAll(".bubble")
+.forEach(b=>{
+
+b.style.background =
+theme.bubble;
+
+});
+
+}
+
+ applyTheme();
+loadQuestion();  
+  
+</script>  </body>  
+</html> 

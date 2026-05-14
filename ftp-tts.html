@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FTP TTS GAME</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+min-height:100vh;
+padding:20px;
+overflow-x:hidden;
+}
+
+/* ================= BG ================= */
+
+.bg{
+position:fixed;
+inset:0;
+overflow:hidden;
+z-index:-1;
+}
+
+.bubble{
+position:absolute;
+bottom:-120px;
+border-radius:50%;
+background:rgba(255,255,255,0.05);
+animation:float 18s linear infinite;
+}
+
+.bubble:nth-child(1){
+left:8%;
+width:90px;
+height:90px;
+animation-duration:14s;
+}
+
+.bubble:nth-child(2){
+left:35%;
+width:140px;
+height:140px;
+animation-duration:22s;
+}
+
+.bubble:nth-child(3){
+left:70%;
+width:110px;
+height:110px;
+animation-duration:18s;
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0);
+opacity:0;
+}
+
+10%{
+opacity:1;
+}
+
+100%{
+transform:translateY(-120vh);
+opacity:0;
+}
+
+}
+
+/* ================= HEADER ================= */
+
+.header{
+text-align:center;
+margin-bottom:25px;
+}
+
+.header h1{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.header p{
+opacity:0.7;
+font-size:14px;
+}
+
+/* ================= TOP BAR ================= */
+
+.topbar{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:15px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+
+#timerDisplay{
+font-size:24px;
+font-weight:bold;
+padding:10px 22px;
+border-radius:50px;
+background:#1e293b;
+border:2px solid #f87171;
+color:#f87171;
+box-shadow:0 0 15px rgba(248,113,113,0.25);
+}
+
+#categoryName{
+padding:10px 18px;
+border-radius:50px;
+background:rgba(255,255,255,0.07);
+font-weight:bold;
+}
+
+/* ================= GAME ================= */
+
+#game{
+max-width:900px;
+margin:auto;
+display:none;
+}
+
+/* ================= GRID ================= */
+
+#grid{
+display:grid;
+
+grid-template-columns:
+repeat(15, minmax(26px, 38px));
+
+gap:2px;
+
+width:max-content;
+
+margin:0 auto 25px auto;
+
+padding:5px;
+
+background:#334155;
+
+border-radius:15px;
+
+overflow-x:auto;
+
+max-width:100%;
+}
+
+/* ukuran cell responsive */
+
+.cell{
+width:38px;
+height:38px;
+
+background:#0f172a;
+position:relative;
+}
+
+.cell.white{
+background:white;
+}
+
+.cell input{
+
+width:100%;
+height:100%;
+
+border:none;
+outline:none;
+
+text-align:center;
+
+font-size:clamp(14px, 3vw, 20px);
+font-weight:bold;
+
+text-transform:uppercase;
+
+background:transparent;
+color:#0f172a;
+
+}
+
+.num{
+position:absolute;
+top:1px;
+left:3px;
+
+font-size:8px;
+font-weight:bold;
+
+color:#0f172a;
+}
+/* ================= CLUE ================= */
+
+#clueList{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+
+}
+
+.clue-group{
+
+background:rgba(255,255,255,0.06);
+
+padding:15px;
+
+border-radius:15px;
+
+backdrop-filter:blur(10px);
+
+}
+
+.clue-group h3{
+
+margin-bottom:10px;
+color:#38bdf8;
+
+}
+
+.clue-item{
+
+font-size:13px;
+line-height:1.5;
+margin-bottom:8px;
+
+padding:8px;
+
+border-radius:10px;
+
+background:rgba(255,255,255,0.04);
+
+transition:0.2s;
+
+cursor:pointer;
+
+}
+
+.clue-item:hover{
+
+background:rgba(255,255,255,0.09);
+
+}
+
+/* ================= BUTTON ================= */
+
+.actions{
+margin-top:25px;
+display:flex;
+gap:12px;
+}
+
+button{
+
+flex:1;
+
+padding:14px;
+
+border:none;
+border-radius:14px;
+
+font-weight:bold;
+font-size:15px;
+
+cursor:pointer;
+
+transition:0.2s;
+
+color:white;
+
+}
+
+.check-btn{
+
+background:
+linear-gradient(135deg,#10b981,#059669);
+
+}
+
+.check-btn:hover{
+transform:scale(1.02);
+}
+
+.back-btn{
+
+background:
+linear-gradient(135deg,#2563eb,#1d4ed8);
+
+}
+
+.back-btn:hover{
+transform:scale(1.02);
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+#clueList{
+grid-template-columns:1fr;
+}
+
+#grid{
+transform:scale(0.82);
+transform-origin:top center;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= BG ================= -->
+
+<div class="bg">
+
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+
+</div>
+
+<!-- ================= HEADER ================= -->
+
+<div class="header">
+
+<h1>🧩 FTP TTS GAME</h1>
+
+<p>
+8 menit. Tebak kata. Jangan kalah sama kotak-kotak putih.
+Manusia modern ternyata gampang dikalahin huruf.
+</p>
+
+</div>
+
+<!-- ================= GAME ================= -->
+
+<div id="game">
+
+<div class="topbar">
+
+<div id="timerDisplay">
+08:00
+</div>
+
+<div id="categoryName">
+Kategori
+</div>
+
+</div>
+
+<div id="grid"></div>
+
+<div id="clueList">
+
+<div class="clue-group">
+
+<h3>➡ Mendatar</h3>
+
+<div id="mendatar"></div>
+
+</div>
+
+<div class="clue-group">
+
+<h3>⬇ Menurun</h3>
+
+<div id="menurun"></div>
+
+</div>
+
+</div>
+
+<div class="actions">
+
+<button class="check-btn"
+onclick="playClick(); checkAnswer()">
+
+✔️ Cek Jawaban
+
+</button>
+
+<button class="back-btn"
+onclick="playClick(); window.location.href='tts-select.html'">
+
+⬅ Kembali
+
+</button>
+
+</div>
+
+</div>
+
+<audio id="clickSound" src="click.wav"></audio>
+
+<script>
+
+/* ================= CATEGORY ================= */
+
+const category =
+localStorage.getItem("ttsCategory");
+
+const categoryFiles = {
+
+makanan: "makanan-tts.js",
+negara: "negara-tts.js",
+sport: "sport-tts.js",
+profesi: "profesi-tts.js"
+
+};
+
+const categoryObject = {
+
+makanan: "MAKANAN_TTS",
+negara: "NEGARA_TTS",
+sport: "SPORT_TTS",
+profesi: "PROFESI_TTS"
+
+};
+
+let currentData = null;
+
+let timer = null;
+let timeLeft = 480;
+
+ const clickSound =
+document.getElementById("clickSound");
+
+clickSound.volume = 0.6;
+
+function playClick(){
+
+clickSound.currentTime = 0;
+clickSound.play();
+
+}
+
+/* ================= LOAD ================= */
+
+function loadCategory(){
+
+if(!category || !categoryFiles[category]){
+
+alert("Kategori tidak ditemukan.");
+window.location.href = "tts-select.html";
+return;
+
+}
+
+const script = document.createElement("script");
+
+script.src =
+categoryFiles[category] + "?v=" + Date.now();
+
+script.onload = () => {
+
+currentData =
+window[categoryObject[category]];
+
+if(!currentData){
+
+alert("Data TTS rusak.");
+return;
+
+}
+
+document.getElementById("game")
+.style.display = "block";
+
+document.getElementById("categoryName")
+.innerText =
+currentData.clue;
+
+renderTTS(currentData);
+
+startTimer();
+
+};
+
+script.onerror = () => {
+
+alert("File kategori gagal dimuat.");
+
+};
+
+document.body.appendChild(script);
+
+}
+
+/* ================= RENDER ================= */
+
+function renderTTS(data){
+
+const size = 15;
+
+const grid =
+document.getElementById("grid");
+
+grid.innerHTML = "";
+
+grid.style.gridTemplateColumns =
+`repeat(${size}, clamp(26px, 7vw, 38px))`;
+
+/* buat grid kosong */
+
+for(let y=0;y<size;y++){
+
+for(let x=0;x<size;x++){
+
+const cell =
+document.createElement("div");
+
+cell.className = "cell";
+
+cell.id = `cell-${x}-${y}`;
+
+grid.appendChild(cell);
+
+}
+
+}
+
+document.getElementById("mendatar")
+.innerHTML = "";
+
+document.getElementById("menurun")
+.innerHTML = "";
+
+data.words.forEach((item,index)=>{
+
+const num = index + 1;
+
+/* clue */
+
+const clue =
+document.createElement("div");
+
+clue.className = "clue-item";
+
+clue.innerText =
+`${num}. ${item.soal}`;
+
+document
+.getElementById(item.type)
+.appendChild(clue);
+
+/* word */
+
+for(let i=0;i<item.word.length;i++){
+
+const x =
+item.type === "mendatar"
+? item.x + i
+: item.x;
+
+const y =
+item.type === "menurun"
+? item.y + i
+: item.y;
+
+const cell =
+document.getElementById(`cell-${x}-${y}`);
+
+if(cell){
+
+cell.classList.add("white");
+
+if(i === 0 &&
+!cell.querySelector(".num")){
+
+const number =
+document.createElement("span");
+
+number.className = "num";
+
+number.innerText = num;
+
+cell.appendChild(number);
+
+}
+
+if(!cell.querySelector("input")){
+
+const input =
+document.createElement("input");
+
+input.maxLength = 1;
+
+input.dataset.answer =
+item.word[i].toUpperCase();
+
+input.oninput = () => {
+
+input.value =
+input.value.toUpperCase();
+
+};
+
+cell.appendChild(input);
+
+}
+
+}
+
+}
+
+});
+
+}
+
+/* ================= TIMER ================= */
+
+function startTimer(){
+
+clearInterval(timer);
+
+timeLeft = 480;
+
+timer = setInterval(()=>{
+
+timeLeft--;
+
+const min =
+Math.floor(timeLeft / 60);
+
+const sec =
+timeLeft % 60;
+
+document.getElementById("timerDisplay")
+.innerText =
+`${min}:${sec < 10 ? "0"+sec : sec}`;
+
+if(timeLeft <= 0){
+
+clearInterval(timer);
+
+document.getElementById("game").innerHTML = `
+
+<div style="
+text-align:center;
+padding:40px;
+background:rgba(255,255,255,0.06);
+border-radius:20px;
+">
+
+<h1 style="color:#f87171;">
+⏰ WAKTU HABIS
+</h1>
+
+<p style="
+margin-top:15px;
+opacity:0.8;
+line-height:1.6;
+">
+
+Huruf-hurufnya menang.<br>
+Otak lu tadi loading kelamaan.
+
+</p>
+
+<button
+onclick="window.location.href='tts-select.html'"
+style="
+margin-top:20px;
+padding:14px 24px;
+border:none;
+border-radius:14px;
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+color:white;
+font-weight:bold;
+cursor:pointer;
+">
+
+⬅ Kembali ke TTS Select
+
+</button>
+
+</div>
+
+`;
+
+}
+
+},1000);
+
+}
+
+/* ================= CHECK ================= */
+
+function checkAnswer(){
+
+const inputs =
+document.querySelectorAll("input");
+
+let correct = 0;
+
+inputs.forEach(input=>{
+
+if(
+input.value.toUpperCase()
+===
+input.dataset.answer
+){
+
+input.style.background =
+"#d1fae5";
+
+input.style.color =
+"#065f46";
+
+correct++;
+
+}else{
+
+input.style.background =
+"#fee2e2";
+
+input.style.color =
+"red";
+
+}
+
+});
+
+if(correct === inputs.length){
+
+clearInterval(timer);
+
+/* tambah coin */
+
+let coins =
+parseInt(localStorage.getItem("coins")) || 0;
+
+coins += 20;
+
+localStorage.setItem("coins", coins);
+
+/* layar menang */
+
+document.getElementById("game").innerHTML = `
+
+<div style="
+text-align:center;
+padding:40px;
+background:rgba(255,255,255,0.06);
+border-radius:20px;
+">
+
+<h1 style="color:#10b981;">
+🎉 TTS SELESAI
+</h1>
+
+<p style="
+margin-top:15px;
+opacity:0.85;
+line-height:1.6;
+">
+
++20 Coin didapat.<br>
+Akhirnya huruf-huruf itu kalah juga.
+
+</p>
+
+<button
+onclick="window.location.href='tts-select.html'"
+style="
+margin-top:20px;
+padding:14px 24px;
+border:none;
+border-radius:14px;
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+color:white;
+font-weight:bold;
+cursor:pointer;
+">
+
+⬅ Kembali ke TTS Select
+
+</button>
+
+</div>
+
+`;
+
+}else{
+
+alert(
+`Masih ada ${
+inputs.length - correct
+} huruf salah.`
+);
+
+}
+
+}
+
+/* ================= THEME SYSTEM ================= */
+
+const themes = {
+
+common:{
+bg:"linear-gradient(135deg,#1e293b,#0f172a)",
+bubble:"rgba(255,255,255,0.05)"
+},
+
+rare:{
+bg:"linear-gradient(135deg,#7f1d1d,#dc2626)",
+bubble:"rgba(255,80,80,0.15)"
+},
+
+epic:{
+bg:"linear-gradient(135deg,#4c1d95,#7c3aed)",
+bubble:"rgba(168,85,247,0.15)"
+},
+
+legendary:{
+bg:"linear-gradient(135deg,#0f172a,#06b6d4)",
+bubble:"rgba(34,211,238,0.15)"
+},
+
+mythic:{
+bg:"linear-gradient(135deg,#78350f,#fbbf24)",
+bubble:"rgba(251,191,36,0.18)"
+}
+
+};
+
+function applyTheme(){
+
+let equipped =
+localStorage.getItem("equippedTheme") || "common";
+
+let theme =
+themes[equipped];
+
+if(!theme) return;
+
+/* body bg */
+
+document.body.style.background =
+theme.bg;
+
+/* bubble */
+
+document
+.querySelectorAll(".bubble")
+.forEach(b=>{
+
+b.style.background =
+theme.bubble;
+
+});
+
+}
+
+/* ================= START ================= */
+
+applyTheme();
+loadCategory();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Boss Result</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+padding:20px;
+}
+
+.box{
+background:rgba(255,255,255,0.06);
+padding:30px;
+border-radius:20px;
+width:100%;
+max-width:400px;
+text-align:center;
+}
+
+h1{
+margin-bottom:15px;
+}
+
+p{
+opacity:0.8;
+margin-bottom:12px;
+line-height:1.5;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:14px;
+background:#2563eb;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+ /* ================= ANIM ================= */
+
+.box{
+animation:pop 0.4s ease;
+backdrop-filter:blur(10px);
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+@keyframes pop{
+
+from{
+opacity:0;
+transform:scale(0.9);
+}
+
+to{
+opacity:1;
+transform:scale(1);
+}
+
+}
+
+button{
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.03);
+background:#1d4ed8;
+}
+
+/* ================= ICON ================= */
+
+#icon{
+font-size:70px;
+margin-bottom:15px;
+}
+
+/* ================= REWARD ================= */
+
+#reward{
+font-size:24px;
+font-weight:bold;
+color:#fbbf24;
+text-shadow:0 0 10px rgba(251,191,36,0.4);
+}
+
+/* ================= BG ================= */
+
+.bg{
+position:fixed;
+inset:0;
+overflow:hidden;
+z-index:-1;
+}
+
+.bubble{
+position:absolute;
+bottom:-120px;
+width:120px;
+height:120px;
+border-radius:50%;
+background:rgba(255,255,255,0.05);
+animation:float 18s linear infinite;
+}
+
+.bubble:nth-child(1){
+left:10%;
+animation-duration:15s;
+}
+
+.bubble:nth-child(2){
+left:45%;
+width:170px;
+height:170px;
+animation-duration:20s;
+}
+
+.bubble:nth-child(3){
+left:80%;
+animation-duration:17s;
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0);
+opacity:0;
+}
+
+10%{
+opacity:1;
+}
+
+100%{
+transform:translateY(-120vh);
+opacity:0;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+  
+  <div class="bg">
+
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+
+</div>
+
+<div class="box">
+  
+  <div id="icon">
+🏆
+</div>
+
+<h1 id="status"></h1>
+
+<p id="message"></p>
+
+<p id="reward"></p>
+
+<button onclick="
+window.location.href='dashboard.html'
+">
+
+Kembali ke Dashboard
+
+</button>
+
+</div>
+
+<script>
+
+const data =
+JSON.parse(
+localStorage.getItem("bossResult")
+);
+
+// fallback kalau data kosong
+if(!data){
+
+window.location.href =
+"dashboard.html";
+
+}
+
+// status
+document.getElementById("status")
+.innerText =
+data.status === "win"
+? "🏆 MENANG"
+: "💀 KALAH";
+
+// pesan
+document.getElementById("message")
+.innerText =
+data.message;
+
+// reward
+document.getElementById("reward")
+.innerText =
+"+ " + data.reward + " coin";
+
+// icon
+document.getElementById("icon")
+.innerText =
+data.status === "win"
+? "🏆"
+: "💀";
+
+ /* ================= THEME SYSTEM ================= */
+
+const themes = {
+
+common:{
+bg:"linear-gradient(135deg,#1e293b,#0f172a)",
+bubble:"rgba(255,255,255,0.05)"
+},
+
+rare:{
+bg:"linear-gradient(135deg,#7f1d1d,#dc2626)",
+bubble:"rgba(255,80,80,0.15)"
+},
+
+epic:{
+bg:"linear-gradient(135deg,#4c1d95,#7c3aed)",
+bubble:"rgba(168,85,247,0.15)"
+},
+
+legendary:{
+bg:"linear-gradient(135deg,#0f172a,#06b6d4)",
+bubble:"rgba(34,211,238,0.15)"
+},
+
+mythic:{
+bg:"linear-gradient(135deg,#78350f,#fbbf24)",
+bubble:"rgba(251,191,36,0.18)"
+}
+
+};
+
+function applyTheme(){
+
+let equipped =
+localStorage.getItem("equippedTheme") || "common";
+
+let theme =
+themes[equipped];
+
+if(!theme) return;
+
+/* body bg */
+
+document.body.style.background =
+theme.bg;
+
+/* bubble */
+
+document
+.querySelectorAll(".bubble")
+.forEach(b=>{
+
+b.style.background =
+theme.bubble;
+
+});
+
+}
+
+applyTheme();
+
+</script>
+
+</body>
+</html>

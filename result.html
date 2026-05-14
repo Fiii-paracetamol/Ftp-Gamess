@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Battle Result</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial;
+background:
+linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+padding:20px;
+}
+
+/* ================= BG ================= */
+
+.bg{
+position:fixed;
+inset:0;
+overflow:hidden;
+z-index:-1;
+}
+
+.bubble{
+position:absolute;
+bottom:-120px;
+width:120px;
+height:120px;
+border-radius:50%;
+background:rgba(255,255,255,0.05);
+animation:float 18s linear infinite;
+}
+
+.bubble:nth-child(1){
+left:10%;
+width:80px;
+height:80px;
+animation-duration:12s;
+}
+
+.bubble:nth-child(2){
+left:45%;
+animation-duration:18s;
+}
+
+.bubble:nth-child(3){
+left:75%;
+width:150px;
+height:150px;
+animation-duration:22s;
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0);
+opacity:0;
+}
+
+10%{
+opacity:1;
+}
+
+100%{
+transform:translateY(-120vh);
+opacity:0;
+}
+
+}
+
+/* ================= BOX ================= */
+
+.box{
+width:100%;
+max-width:420px;
+background:rgba(255,255,255,0.06);
+padding:30px;
+border-radius:25px;
+backdrop-filter:blur(10px);
+text-align:center;
+box-shadow:
+0 10px 30px rgba(0,0,0,0.4);
+
+animation:pop 0.4s ease;
+}
+
+@keyframes pop{
+
+from{
+opacity:0;
+transform:scale(0.92);
+}
+
+to{
+opacity:1;
+transform:scale(1);
+}
+
+}
+
+/* ================= ICON ================= */
+
+#icon{
+font-size:80px;
+margin-bottom:15px;
+animation:floatIcon 2s infinite ease-in-out;
+}
+
+@keyframes floatIcon{
+
+0%{
+transform:translateY(0);
+}
+
+50%{
+transform:translateY(-8px);
+}
+
+100%{
+transform:translateY(0);
+}
+
+}
+
+/* ================= TEXT ================= */
+
+h1{
+font-size:32px;
+margin-bottom:10px;
+}
+
+#message{
+opacity:0.8;
+line-height:1.6;
+margin-top:10px;
+}
+
+#reward{
+margin-top:20px;
+font-size:24px;
+font-weight:bold;
+color:#fbbf24;
+}
+
+/* ================= BUTTON ================= */
+
+button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:16px;
+margin-top:25px;
+background:
+linear-gradient(135deg,#2563eb,#1d4ed8);
+color:white;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.03);
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= BG ================= -->
+
+<div class="bg">
+
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+
+</div>
+
+<!-- ================= BOX ================= -->
+
+<div class="box">
+
+<div id="icon">
+🏆
+</div>
+
+<h1 id="status">
+MENANG
+</h1>
+
+<p id="message">
+Pesan result
+</p>
+
+<div id="reward">
++0 Coin
+</div>
+
+<button onclick="
+window.location.href='dashboard.html'
+">
+
+⬅ Kembali ke Dashboard
+
+</button>
+
+</div>
+
+<script>
+
+// ================= DATA =================
+
+const data =
+JSON.parse(
+localStorage.getItem("result")
+);
+
+// fallback
+if(!data){
+
+window.location.href =
+"dashboard.html";
+
+}
+
+// ================= STATUS =================
+
+document.getElementById("status")
+.innerText =
+data.win
+? "🏆 MENANG"
+: "💀 KALAH";
+
+// ================= ICON =================
+
+document.getElementById("icon")
+.innerText =
+data.win
+? "🏆"
+: "💀";
+
+// ================= MESSAGE EXTRA =================
+
+const roast = [
+
+"Bossnya sampe kasihan liat damage lu.",
+
+"Jawaban lu lebih acak dari hidup NPC GTA.",
+
+"10 menit dipake mikir, hasilnya tetep tragedi.",
+
+"Raja Integral ngajak lu balik belajar pecahan.",
+
+"Lord Grammar barusan pindah kewarganegaraan.",
+
+"Mutan Kimia nyuruh lu jangan pegang tabung reaksi dulu.",
+
+"Penjaga Hikmah kehilangan hikmah setelah lihat skor lu.",
+
+"Soalnya SMP. Reaksi lu kayak disuruh bikin roket NASA.",
+
+"Damage lu ke boss setara lempar kapas.",
+
+"Bossnya nyaris tidur nunggu jawaban bener.",
+
+"Kalah dengan penuh konsistensi. Salut sih.",
+
+"Kalau ngawur dapat poin, lu udah mythic rank.",
+
+"HP boss masih tebel. Yang tipis malah harapan.",
+
+"Kecepetan 500 tahun dek 🗿",
+
+"Boss battle berubah jadi sesi bullying akademik."
+
+];
+
+const praise = [
+
+"Bossnya pensiun setelah lawan lu.",
+
+"Damage lu ilegal buat ukuran anak SMP.",
+
+"Raja Integral resmi jadi korban matematika brutal.",
+
+"Lord Grammar nangis pake present perfect continuous.",
+
+"Mutan Kimia gagal berevolusi lawan otak lu.",
+
+"Penjaga Hikmah sekarang yang butuh nasihat.",
+
+"Jawaban lu lurus semua. Langka juga.",
+
+"Boss battle berubah jadi eksekusi publik.",
+
+"Otak lu akhirnya online hari ini.",
+
+"HP boss lenyap lebih cepat dari kuota akhir bulan.",
+
+"Lu main bukan buat menang. Lu buat boss trauma.",
+
+"Kalau ini anime, soundtrack kemenangan udah nyala.",
+
+"Bossnya sekarang nyari mapel lain buat hidup.",
+
+"Serem juga ternyata kalau lu fokus.",
+
+"Kerja bagus. Sistem pendidikan akhirnya berhasil sekali."
+
+];
+
+// ================= MESSAGE =================
+
+let finalMessage = data.message;
+
+if(data.win){
+
+let randomPraise =
+praise[
+Math.floor(
+Math.random() * praise.length
+)
+];
+
+finalMessage +=
+"\n\n" + randomPraise;
+
+}else{
+
+let randomRoast =
+roast[
+Math.floor(
+Math.random() * roast.length
+)
+];
+
+finalMessage +=
+"\n\n" + randomRoast;
+
+}
+
+document.getElementById("message")
+.innerText =
+finalMessage;
+
+// ================= REWARD =================
+
+document.getElementById("reward")
+.innerText =
+`+${data.reward} Coin`;
+
+// ================= EFFECT =================
+
+if(data.win){
+
+document.querySelector(".box")
+.style.boxShadow =
+"0 0 40px rgba(251,191,36,0.4)";
+
+}else{
+
+document.querySelector(".box")
+.style.boxShadow =
+"0 0 40px rgba(239,68,68,0.35)";
+
+}
+
+ /* ================= THEME SYSTEM ================= */
+
+const themes = {
+
+common:{
+bg:"linear-gradient(135deg,#1e293b,#0f172a)",
+bubble:"rgba(255,255,255,0.05)"
+},
+
+rare:{
+bg:"linear-gradient(135deg,#7f1d1d,#dc2626)",
+bubble:"rgba(255,80,80,0.15)"
+},
+
+epic:{
+bg:"linear-gradient(135deg,#4c1d95,#7c3aed)",
+bubble:"rgba(168,85,247,0.15)"
+},
+
+legendary:{
+bg:"linear-gradient(135deg,#0f172a,#06b6d4)",
+bubble:"rgba(34,211,238,0.15)"
+},
+
+mythic:{
+bg:"linear-gradient(135deg,#78350f,#fbbf24)",
+bubble:"rgba(251,191,36,0.18)"
+}
+
+};
+
+function applyTheme(){
+
+let equipped =
+localStorage.getItem("equippedTheme") || "common";
+
+let theme =
+themes[equipped];
+
+if(!theme) return;
+
+/* body bg */
+
+document.body.style.background =
+theme.bg;
+
+/* bubble */
+
+document
+.querySelectorAll(".bubble")
+.forEach(b=>{
+
+b.style.background =
+theme.bubble;
+
+});
+
+}
+
+ applyTheme();
+
+</script>
+
+</body>
+</html>

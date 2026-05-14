@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game - Pro Edition</title>
+
+    <!-- Load Mapel -->
+    <script src="mtk.js"></script>
+    <script src="bindo.js"></script>
+    <script src="bing.js"></script>
+    <script src="ipa.js"></script>
+    <script src="pai.js"></script>
+
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a; color: white; padding: 20px;
+            min-height: 100vh; transition: 0.4s; overflow-x: hidden;
+        }
+        .top { margin-bottom: 15px; }
+        .info-bar { display: flex; justify-content: space-between; color: #94a3b8; font-size: 14px; margin-top: 5px; }
+        #timerDisplay { text-align: right; color: #fbbf24; font-weight: bold; font-size: 18px; margin: 10px 0; }
+        
+        .quiz-box {
+            background: rgba(255,255,255,0.05); padding: 20px;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            animation: fade 0.3s ease;
+        }
+        @keyframes fade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        .option {
+            background: #1e293b; padding: 15px; margin-bottom: 10px;
+            border-radius: 12px; cursor: pointer; transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .option:hover { background: #334155; transform: scale(1.01); }
+        .correct { background: #16a34a !important; animation: correctPop 0.3s ease; }
+        .wrong { background: #dc2626 !important; animation: shake 0.3s ease; }
+
+        @keyframes correctPop { 0%, 100% {transform:scale(1);} 50% {transform:scale(1.03);} }
+        @keyframes shake { 0%, 100% {transform:translateX(0);} 25% {transform:translateX(-5px);} 75% {transform:translateX(5px);} }
+
+        .next-btn {
+            width: 100%; padding: 15px; margin-top: 15px;
+            background: #2563eb; color: white; border: none;
+            border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px;
+        }
+        .next-btn:active { transform: scale(0.98); }
+
+        .item-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+        .item-bar button {
+            padding: 8px 12px; border: none; border-radius: 8px;
+            background: #1e40af; color: white; cursor: pointer; font-size: 12px;
+        }
+
+        .coin-float {
+            position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
+            font-size: 30px; font-weight: bold; color: #fbbf24; pointer-events: none;
+            animation: floatUp 1s ease forwards; z-index: 999;
+        }
+        @keyframes floatUp { 0% {opacity:0; transform:translate(-50%,0);} 20% {opacity:1;} 100% {opacity:0; transform:translate(-50%,-150px);} }
+
+        .level-popup {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg,#f59e0b,#fbbf24); padding: 15px 25px;
+            border-radius: 15px; font-weight: bold; color: black; z-index: 9999; animation: popup 1.5s ease forwards;
+        }
+        @keyframes popup { 0% {opacity:0; top:-50px;} 20%, 80% {opacity:1; top:20px;} 100% {opacity:0; top:-50px;} }
+    </style>
+</head>
+<body>
+
+<div class="top">
+    <h2 id="subjectName">Mapel: -</h2>
+    <div class="info-bar">
+        <div id="scoreDisplay">Score: 0</div>
+        <div id="coinDisplay">Coins: 0</div>
+    </div>
+    <div id="timerDisplay">05:00</div>
+</div>
+
+<div class="item-bar">
+    <button onclick="useHint()">💡 Hint</button>
+    <button onclick="useSkip()">⏭ Skip</button>
+    <button onclick="useExtra()">⏱ +30s</button>
+    <button onclick="useReveal()">🎯 Reveal</button>
+    <button onclick="useAuto()">🤖 Auto</button>
+</div>
+
+<div class="quiz-box">
+    <p id="questionNumber" style="color:#94a3b8; margin-bottom:5px;"></p>
+    <h2 id="questionText" style="margin-bottom:20px;">Memuat soal...</h2>
+    <div id="optionsContainer"></div>
+    <button class="next-btn" onclick="nextQuestion()">Pertanyaan Berikutnya</button>
+</div>
+
+<script>
+// ================= SOUND & GLOBALS =================
+const clickSound = new Audio("click.wav");
+const successSound = new Audio("success.wav");
+const errorSound = new Audio("error.wav");
+const coinSound = new Audio("coin.wav");
+
+function playSound(s) { s.currentTime = 0; s.play().catch(()=>{}); }
+
+let subject = localStorage.getItem("subject") || "MTK";
+let totalCoins = parseInt(localStorage.getItem("totalCoins")) || 0;
+let current = 0, correct = 0, wrong = 0;
+let answered = false, finished = false;
+let timeLeft = 300, timer;
+let questions = [];
+
+// ================= INIT DATA =================
+function init() {
+    document.getElementById("subjectName").innerText = "Mapel: " + subject;
+    let allQ = [];
+    if(subject==="MTK") allQ = typeof mtkQuestions !== 'undefined' ? mtkQuestions : [];
+    if(subject==="BINDO") allQ = typeof bindoQuestions !== 'undefined' ? bindoQuestions : [];
+    if(subject==="BING") allQ = typeof bingQuestions !== 'undefined' ? bingQuestions : [];
+    if(subject==="IPA") allQ = typeof ipaQuestions !== 'undefined' ? ipaQuestions : [];
+    if(subject==="PAI") allQ = typeof paiQuestions !== 'undefined' ? paiQuestions : [];
+
+    questions = allQ.sort(() => Math.random() - 0.5).slice(0, 10);
+    if(questions.length === 0) alert("Database soal kosong!");
+    
+    startTimer();
+    applyTheme();
+    loadQ();
+    updateUI();
+}
+
+// ================= LOGIC QUIZ =================
+function loadQ() {
+    if(current >= questions.length) return endQuiz();
+    answered = false;
+    let q = questions[current];
+    
+    document.getElementById("questionNumber").innerText = `Soal ${current + 1} / ${questions.length}`;
+    document.getElementById("questionText").innerText = q.question;
+    
+    const container = document.getElementById("optionsContainer");
+    container.innerHTML = "";
+    
+    q.options.forEach(opt => {
+        let div = document.createElement("div");
+        div.className = "option";
+        div.innerText = opt;
+        div.onclick = () => check(opt);
+        container.appendChild(div);
+    });
+}
+
+function check(selected) {
+    if (answered || finished) return;
+    answered = true;
+    
+    let q = questions[current];
+    let isCorrect = (selected === q.answer);
+
+    document.querySelectorAll(".option").forEach(el => {
+        el.style.pointerEvents = "none";
+        if(el.innerText === q.answer) el.classList.add("correct");
+        if(el.innerText === selected && !isCorrect) el.classList.add("wrong");
+    });
+
+    if (isCorrect) {
+        playSound(successSound); playSound(coinSound);
+        correct++;
+        let reward = q.difficulty === "easy" ? 5 : (q.difficulty === "medium" ? 15 : 20);
+        totalCoins += reward;
+        showCoin(reward);
+        updateQuest("coin", reward);
+        checkLevelUp();
+    } else {
+        playSound(errorSound);
+        wrong++;
+        totalCoins = Math.max(0, totalCoins - 10);
+    }
+    
+    localStorage.setItem("totalCoins", totalCoins);
+    updateUI();
+}
+
+function nextQuestion() {
+    if (!answered) return alert("Jawab dulu dong! 🗿");
+    playSound(clickSound);
+    current++;
+    loadQ();
+}
+
+// ================= UTILS & QUEST =================
+function updateUI() {
+    document.getElementById("scoreDisplay").innerText = "Score: " + (correct * 10);
+    document.getElementById("coinDisplay").innerText = "Coins: " + totalCoins;
+}
+
+function startTimer() {
+    timer = setInterval(() => {
+        if(finished) return clearInterval(timer);
+        timeLeft--;
+        let m = Math.floor(timeLeft/60), s = timeLeft%60;
+        document.getElementById("timerDisplay").innerText = `${m}:${s.toString().padStart(2,'0')}`;
+        if(timeLeft <= 0) endQuiz();
+    }, 1000);
+}
+
+function updateQuest(type, val = 1) {
+    let data = JSON.parse(localStorage.getItem("questData")) || { progress: {}, claimed: [], lastReset: Date.now() };
+    data.progress[type] = (data.progress[type] || 0) + val;
+    localStorage.setItem("questData", JSON.stringify(data));
+}
+
+function showCoin(amt) {
+    let d = document.createElement("div");
+    d.className = "coin-float"; d.innerText = `+${amt} 🪙`;
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 1000);
+}
+
+// ================= ITEMS =================
+function hasItem(id) { return (JSON.parse(localStorage.getItem("inventory")) || []).includes(id); }
+function removeItem(id) {
+    let inv = JSON.parse(localStorage.getItem("inventory")) || [];
+    let idx = inv.indexOf(id);
+    if(idx > -1) inv.splice(idx,1);
+    localStorage.setItem("inventory", JSON.stringify(inv));
+}
+
+function useHint() {
+    if(!hasItem("hint")) return alert("Beli dulu di Shop!");
+    alert("Petunjuk: Jawaban bukan '" + questions[current].options.find(o => o !== questions[current].answer) + "'");
+    removeItem("hint");
+}
+
+function useSkip() {
+    if(!hasItem("skip")) return alert("Beli dulu di Shop!");
+    removeItem("skip"); answered = true; nextQuestion();
+}
+
+function useExtra() {
+    if(!hasItem("extra")) return alert("Beli dulu di Shop!");
+    timeLeft += 30; removeItem("extra"); alert("+30 Detik!");
+}
+
+function useReveal() {
+    if(!hasItem("reveal")) return alert("Beli dulu di Shop!");
+    alert("Jawabannya: " + questions[current].answer); removeItem("reveal");
+}
+
+function useAuto() {
+    if(!hasItem("autoanswer")) return alert("Beli dulu di Shop!");
+    alert("Robot mengerjakan soal...");
+    correct = 10; wrong = 0; totalCoins += 100; removeItem("autoanswer"); endQuiz();
+}
+
+// ================= END GAME =================
+function endQuiz() {
+    if(finished) return;
+    finished = true;
+    clearInterval(timer);
+
+    // Achievement & Quest Perfect
+    if(wrong === 0 && correct === 10) updateQuest("perfect", 1);
+    
+    // Save Stats
+    let stats = JSON.parse(localStorage.getItem("stats")) || { played:0, win:0, correct:0, wrong:0 };
+    stats.played++; stats.correct += correct; stats.wrong += wrong;
+    localStorage.setItem("stats", JSON.stringify(stats));
+
+    // Leaderboard
+    let lb = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    let pName = localStorage.getItem("player") || "Player";
+    let pExist = lb.find(x => x.name === pName);
+    if(pExist) pExist.coins = totalCoins; else lb.push({name:pName, coins:totalCoins});
+    lb.sort((a,b) => b.coins - a.coins);
+    localStorage.setItem("leaderboard", JSON.stringify(lb));
+
+    alert(`Quiz Selesai!\nBenar: ${correct}\nSalah: ${wrong}`);
+    window.location.href = "dashboard.html";
+}
+
+function applyTheme(){
+    const t = localStorage.getItem("equippedTheme");
+    const maps = { rare: "linear-gradient(135deg,#7f1d1d,#dc2626)", epic: "linear-gradient(135deg,#4c1d95,#7c3aed)", legendary: "linear-gradient(135deg,#0f172a,#06b6d4)", mythic: "linear-gradient(135deg,#78350f,#fbbf24)" };
+    if(maps[t]) document.body.style.background = maps[t];
+}
+
+function checkLevelUp() {
+    // Sederhana: jika koin kelipatan 500
+    if(totalCoins % 500 === 0 && totalCoins !== 0) {
+        let p = document.createElement("div");
+        p.className = "level-popup"; p.innerText = "🎉 RANK UP!";
+        document.body.appendChild(p); setTimeout(()=>p.remove(), 1500);
+    }
+}
+
+init();
+</script>
+</body>
+</html>

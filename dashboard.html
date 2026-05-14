@@ -1,0 +1,2756 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial;
+background:radial-gradient(circle at top,#1e293b,#0f172a);
+color:white;
+min-height:100vh;
+padding:20px;
+animation:fade 0.6s ease;
+}
+
+ body{
+transition:0.4s;
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(10px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* ================= CARD ================= */
+
+.card{
+background:rgba(255,255,255,0.06);
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+ backdrop-filter:blur(10px);
+box-shadow:0 10px 25px rgba(0,0,0,0.35);
+transition:0.25s ease;
+animation:pop 0.4s ease;
+}
+
+.card:hover{
+transform:translateY(-2px);
+}
+
+@keyframes pop{
+from{
+opacity:0;
+transform:scale(0.97);
+}
+to{
+opacity:1;
+transform:scale(1);
+}
+}
+
+/* ================= TEXT ================= */
+
+h1{
+margin-bottom:10px;
+font-size:22px;
+letter-spacing:0.5px;
+}
+
+h2{
+margin-bottom:10px;
+font-size:18px;
+opacity:0.9;
+}
+
+/* ================= COIN + RANK ================= */
+
+#coinValue{
+color:#fbbf24;
+font-weight:bold;
+text-shadow:0 0 10px rgba(251,191,36,0.3);
+}
+
+#rankValue{
+color:#60a5fa;
+margin-top:5px;
+}
+
+/* ================= BUTTON ================= */
+
+button{
+padding:15px;
+border:none;
+border-radius:15px;
+background:linear-gradient(135deg,#1e40af,#2563eb);
+color:white;
+font-weight:bold;
+cursor:pointer;
+margin:5px 0;
+transition:0.2s ease;
+box-shadow:0 6px 15px rgba(37,99,235,0.25);
+}
+
+button:hover{
+transform:scale(1.03);
+box-shadow:0 10px 20px rgba(37,99,235,0.35);
+}
+
+button:active{
+transform:scale(0.96);
+}
+
+button:disabled{
+opacity:0.4;
+cursor:not-allowed;
+transform:none;
+box-shadow:none;
+}
+
+/* ================= GAME MODE ================= */
+
+.game-mode{
+
+background:rgba(255,255,255,0.05);
+padding:15px;
+border-radius:16px;
+
+border:1px solid rgba(255,255,255,0.06);
+
+margin-top:15px;
+
+transition:0.25s;
+
+}
+
+.game-mode:hover{
+
+transform:translateY(-2px);
+
+background:rgba(255,255,255,0.08);
+
+}
+
+.game-info{
+
+display:flex;
+gap:14px;
+align-items:flex-start;
+
+}
+
+.game-icon{
+
+width:52px;
+height:52px;
+
+border-radius:14px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:24px;
+
+background:
+linear-gradient(135deg,#7c3aed,#5b21b6);
+
+box-shadow:
+0 6px 18px rgba(124,58,237,0.35);
+
+flex-shrink:0;
+
+}
+
+.game-info h3{
+
+margin:0;
+margin-bottom:4px;
+
+font-size:18px;
+
+}
+
+.game-info p{
+
+opacity:0.7;
+font-size:13px;
+line-height:1.5;
+
+}
+
+.play-btn{
+
+width:100%;
+margin-top:15px;
+
+padding:14px;
+
+border:none;
+border-radius:14px;
+
+background:
+linear-gradient(135deg,#7c3aed,#5b21b6);
+
+color:white;
+
+font-weight:bold;
+font-size:15px;
+
+cursor:pointer;
+
+transition:0.25s;
+
+box-shadow:
+0 6px 20px rgba(124,58,237,0.35);
+
+}
+
+.play-btn:hover{
+
+transform:
+translateY(-2px) scale(1.01);
+
+box-shadow:
+0 10px 25px rgba(124,58,237,0.45);
+
+}
+
+.play-btn:active{
+
+transform:scale(0.97);
+
+}
+
+/* ================= SUPER BOSS ========== */
+
+.superboss-btn{
+  width:100%;
+  padding:15px;
+  margin-top:15px;
+  border:none;
+  border-radius:15px;
+  background:linear-gradient(135deg,#ef4444,#b91c1c);
+  color:white;
+  font-weight:bold;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.2s;
+  box-shadow:0 0 15px rgba(239,68,68,0.4);
+}
+
+.superboss-btn:hover{
+  transform:scale(1.03);
+  box-shadow:0 0 25px rgba(239,68,68,0.6);
+}
+
+.superboss-btn:active{
+  transform:scale(0.98);
+}
+
+/* ================= BOX ================= */
+
+.stats-box{
+background:rgba(255,255,255,0.04);
+padding:20px;
+border-radius:15px;
+margin-top:20px;
+border:1px solid rgba(255,255,255,0.05);
+}
+
+/* ================= SHOP ================= */
+
+#shop{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.shop-item{
+display:flex;
+flex-direction:column;
+gap:6px;
+padding:12px;
+border-radius:12px;
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.06);
+transition:0.2s ease;
+}
+
+.shop-item:hover{
+transform:translateY(-2px);
+background:rgba(255,255,255,0.08);
+}
+
+.shop-item button{
+margin-top:8px;
+width:100%;
+}
+
+.shop-desc{
+font-size:12px;
+opacity:0.7;
+}
+
+/* ================= ACHIEVEMENT ================= */
+
+#achBox div{
+margin-top:8px;
+padding:10px;
+border-radius:12px;
+background:rgba(251,191,36,0.08);
+border:1px solid rgba(251,191,36,0.2);
+cursor:pointer;
+}
+
+.locked{
+opacity:0.35;
+filter:grayscale(1);
+}
+
+ /* ================= INVENTORY UI ================= */
+
+.inventory-item{
+background:rgba(255,255,255,0.05);
+padding:14px;
+border-radius:14px;
+margin-top:10px;
+transition:0.2s;
+border:1px solid rgba(255,255,255,0.06);
+}
+
+.inventory-item:hover{
+transform:translateY(-2px);
+background:rgba(255,255,255,0.08);
+}
+
+/* ================= LEADERBOARD ================= */
+
+#board div{
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:12px;
+margin-top:10px;
+
+border-radius:14px;
+
+background:rgba(255,255,255,0.05);
+
+border:1px solid rgba(255,255,255,0.06);
+
+transition:0.2s;
+}
+
+#board div:hover{
+transform:scale(1.01);
+background:rgba(255,255,255,0.08);
+}
+
+/* ================= PROFILE GLOW ================= */
+
+#profileBox{
+animation:fade 0.5s ease;
+}
+
+#profileBox h3{
+font-size:22px;
+margin-bottom:4px;
+}
+
+#profileBox p{
+margin-top:3px;
+}
+
+/* ================= SCROLLBAR ================= */
+
+::-webkit-scrollbar{
+width:8px;
+}
+
+::-webkit-scrollbar-track{
+background:#0f172a;
+}
+
+::-webkit-scrollbar-thumb{
+background:#334155;
+border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+background:#475569;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:600px){
+
+body{
+padding:15px;
+}
+
+button{
+width:100%;
+}
+
+.card{
+padding:16px;
+}
+
+}
+
+ /* ================= BG ANIMATION ================= */
+
+.bg-animation{
+position:fixed;
+inset:0;
+overflow:hidden;
+z-index:-1;
+}
+
+.bubble{
+position:absolute;
+bottom:-120px;
+width:120px;
+height:120px;
+border-radius:50%;
+background:rgba(255,255,255,0.05);
+filter:blur(4px);
+opacity:0.8;
+animation:float 18s linear infinite;
+transition:0.4s;
+will-change:transform;
+}
+
+.bubble:nth-child(1){
+left:5%;
+width:80px;
+height:80px;
+animation-duration:14s;
+}
+
+.bubble:nth-child(2){
+left:20%;
+animation-duration:20s;
+animation-delay:2s;
+}
+
+.bubble:nth-child(3){
+left:40%;
+width:160px;
+height:160px;
+animation-duration:24s;
+}
+
+.bubble:nth-child(4){
+left:65%;
+width:100px;
+height:100px;
+animation-duration:16s;
+animation-delay:1s;
+}
+
+.bubble:nth-child(5){
+left:80%;
+width:140px;
+height:140px;
+animation-duration:22s;
+}
+
+.bubble:nth-child(6){
+left:92%;
+width:70px;
+height:70px;
+animation-duration:13s;
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0) scale(1);
+opacity:0;
+}
+
+10%{
+opacity:1;
+}
+
+100%{
+transform:translateY(-120vh) scale(1.3);
+opacity:0;
+}
+
+}
+
+.cat, .monster {
+  position: fixed;
+  top: 70%; /* Turunin dikit biar gak melayang banget */
+  left: 0; 
+  font-size: 40px; /* Biar lebih kelihatan */
+  transition: transform 0.1s ease; /* Biar pas balik badan smooth */
+  z-index: 10;
+  pointer-events: none; /* Biar gak ganggu klik tombol */
+  will-change: left;
+}
+
+.cat {
+  left: 100px;
+}
+
+.monster {
+  left: 300px;
+}
+
+ /* Animasi Lompat Kucing */
+/* 1. Reset posisi dasar */
+.cat, .monster {
+  position: fixed;
+  bottom: 10%; /* Titik pijak di bawah */
+  left: 0;
+  font-size: 40px;
+  z-index: 10;
+  pointer-events: none;
+  will-change: left, bottom;
+  /* HAPUS transition: transform di sini karena bikin bentrok */
+}
+
+/* 2. Definisi Animasi */
+@keyframes jump-animation {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-70px); } /* Tinggi lompatan */
+  100% { transform: translateY(0); }
+}
+
+/* 3. Class yang dipicu JS */
+.jumping {
+  animation: jump-animation 0.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) !important;
+}
+
+/* ================= TOAST NOTIFICATION ================= */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    min-width: 200px;
+    padding: 15px 20px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+               toastOut 0.4s 2.6s forwards;
+}
+
+@keyframes toastIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toastOut {
+    to { transform: translateX(120%); opacity: 0; }
+}
+
+.toast-success { background: linear-gradient(135deg, #10b981, #059669); border-left: 5px solid #047857; }
+.toast-error { background: linear-gradient(135deg, #ef4444, #b91c1c); border-left: 5px solid #7f1d1d; }
+.toast-info { background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-left: 5px solid #1e40af; }
+
+/* Gelembung Teks Pet */
+.speech-bubble {
+    position: absolute;
+    bottom: 80px;
+    background: white;
+    color: #1e293b;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 100px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    text-align: center;
+    /* Tambahkan ini biar pas dibalik gak kaku */
+    transition: opacity 0.3s, transform 0.3s; 
+}
+
+/* Segitiga kecil di bawah gelembung */
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+}
+
+.bubble-active {
+    opacity: 1;
+    transform: translateY(-5px);
+}
+
+ /* Tambahin efek glow di teks koin */
+#coinValue {
+    color: #fbbf24;
+    font-weight: bold;
+    text-shadow: 0 0 15px rgba(251, 191, 36, 0.6); /* Lebih terang */
+    font-size: 24px;
+}
+
+/* Biar card lebih 'nyala' */
+.card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* ================= DAILY QUEST (CLEAN STYLE) ================= */
+
+#questBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* tiap quest card */
+#questBox > div {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: 0.2s ease;
+  backdrop-filter: blur(6px);
+}
+
+#questBox > div:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* title quest */
+#questBox b {
+  display: block;
+  font-size: 14px;
+  color: #fbbf24;
+  margin-bottom: 4px;
+}
+
+/* desc */
+#questBox small {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+/* progress text */
+#questBox div {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+/* tombol claim */
+#questBox button {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#questBox button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* quest selesai */
+#questBox .done {
+  opacity: 0.5;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+</style>
+</head>
+
+<body>
+ 
+ <!--============ ANIMASI BG ========= -->
+
+ <div class="bg-animation">
+
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+
+</div>
+
+<div class="card">
+
+<h1 id="playerName"></h1>
+
+<p>
+🪙
+<span id="coinValue">0</span>
+Coins
+</p>
+
+<p id="rankValue">
+Rank: Pemula
+</p>
+
+</div>
+
+<!-- ================= PROFILE ================= -->
+
+<div class="card stats-box">
+
+<h2>Profile 👤</h2>
+
+<div id="profileBox"></div>
+
+<button onclick="changeAvatar()">
+Ganti Avatar
+</button>
+
+</div>
+
+<!-- ================= MAPEL ================= -->
+
+<div class="card">
+
+<h2>Pilih Mapel</h2>
+
+ <p style="opacity:0.7;font-size:13px;margin-bottom:10px;">
+Pilih mapel buat farming coin 🗿
+</p>
+
+<button id="btn-MTK" onclick="choose('MTK')">
+MTK
+</button>
+
+<button id="btn-BINDO" onclick="choose('BINDO')">
+B. Indo
+</button>
+
+<button id="btn-BING" onclick="choose('BING')">
+B. Inggris
+</button>
+
+<button id="btn-IPA" onclick="choose('IPA')">
+IPA
+</button>
+
+<button id="btn-PAI" onclick="choose('PAI')">
+PAI
+</button>
+
+</div>
+
+ <!-- ================= MODE GAME ================= -->
+
+<div class="card stats-box">
+
+<h2 style="
+margin-bottom:15px;
+">
+🎮 Mode Game
+</h2>
+
+<p style="
+opacity:0.7;
+font-size:13px;
+margin-bottom:18px;
+">
+
+Main mode lain buat farming coin lebih cepat 🗿
+
+</p>
+
+<div class="game-mode">
+
+<div class="game-info">
+
+<div class="game-icon">
+⚡
+</div>
+
+<div>
+
+<h3>Tebak Cepat</h3>
+
+<p>
+10 soal random campur semua mapel.
+30 detik tiap soal.
++30 coin tiap jawaban benar.
+</p>
+
+</div>
+
+</div>
+
+<button
+id="fastBtn"
+class="play-btn"
+onclick="openFastGame()">
+
+⚡ Main Sekarang
+
+</button>
+
+</div>
+
+</div>
+
+<div class="game-mode">
+
+<div class="game-info">
+
+<div class="game-icon">
+🧩
+</div>
+
+<div>
+
+<h3>TTS Mode</h3>
+
+<p>
+Main teka-teki silang absurd buat have fun.
+8 menit timer.
+Otak diperas tanpa ampun.
+</p>
+
+</div>
+
+</div>
+
+<button
+class="play-btn"
+onclick="openTTS()"
+id="ttsBtn"
+>
+
+🧩 Main TTS 🔒
+
+</button>
+</div>
+
+<!-- ================= BOSS BATTLE ================= -->
+<div class="card stats-box">
+
+<h2>👹 Boss Battle (150 💰)</h2>
+
+<p style="opacity:0.7;font-size:13px;margin-bottom:15px;">
+Lawan boss tiap mapel. Salah dikit auto kena damage 🗿
+</p>
+
+<button class="superboss-btn" onclick="goBossBattle()">
+MASUK BOSS BATTLE (150 KOIN)
+</button>
+
+</div>
+
+<!-- ================= SUPER BOSS ================= -->
+<div class="card stats-box">
+
+<h2>💀 Super Boss (250 💰)</h2>
+
+<p style="opacity:0.7;font-size:13px;margin-bottom:15px;">
+Mode chaos. Boss HP gede + damage brutal 💀
+</p>
+
+<button class="superboss-btn" onclick="goSuperHardBoss()">
+MASUK SUPER BOSS (250 KOIN)
+</button>
+
+</div>
+<!-- ================= SHOP ================= -->
+
+<div class="card stats-box">
+
+<h2>Shop 🏪</h2>
+
+<div id="shop"></div>
+
+<p id="shopMsg"></p>
+
+</div>
+
+<!-- ================= THEME SHOP =========== -->
+
+ <div class="card stats-box">
+
+<h2>🎨 Theme Shop</h2>
+
+<div id="themeShop"></div>
+
+</div>
+
+ <!-- ================= PET & MONSTER SYSTEM ================= -->
+<div class="card stats-box">
+  <h2>🐾 Pet & Monster Lab</h2>
+  <p id="petEventMsg" style="color: #60a5fa; font-size: 11px; margin-bottom: 10px; font-weight: bold; min-height: 15px;"></p>
+  
+  <div style="display: flex; gap: 10px; justify-content: space-between;">
+    <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; text-align: center;">
+      <div id="petPreview" style="font-size: 30px; margin-bottom: 5px;">🐱</div>
+      <div id="petLevel" style="font-size: 11px;">Makan: 0</div>
+      <div id="petMood" style="font-size: 10px; opacity: 0.8; margin-bottom: 8px;">Status: ✨ Ceria</div>
+      <button onclick="feed('pet')" style="width: 100%; padding: 8px; font-size: 12px;">🍖 Feed</button>
+    </div>
+
+    <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; text-align: center;">
+      <div id="monsterPreview" style="font-size: 30px; margin-bottom: 5px;">👺</div>
+      <div id="monsterLevel" style="font-size: 11px;">Makan: 0</div>
+      <div id="monsterMood" style="font-size: 10px; opacity: 0.8; margin-bottom: 8px;">Status: ✨ Ceria</div>
+      <button onclick="feed('monster')" style="width: 100%; padding: 8px; font-size: 12px; background: linear-gradient(135deg,#9333ea,#4f46e5);">🥩 Feed</button>
+    </div>
+  </div>
+  
+  <div id="passiveIncomeInfo" style="margin-top: 15px; font-size: 12px; color: #fbbf24; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+    💰 Pendapatan Pasif: 0 koin/jam
+  </div>
+</div>
+
+
+
+<!-- ================= INVENTORY ================= -->
+
+<div class="card stats-box">
+
+<h2>Inventory 🎒</h2>
+
+ <p style="opacity:0.7;font-size:13px;margin-bottom:10px;">
+Klik item tertentu untuk digunakan
+</p>
+
+<div id="inventoryBox"></div>
+
+</div>
+
+<!--=========STATS=====-->
+
+ <div class="card stats-box">
+
+<h2>Statistik 📊</h2>
+
+<div id="statsBox"></div>
+
+</div>
+
+<!-- ================= LEADERBOARD ================= -->
+
+<div class="card stats-box">
+
+<h2>Leaderboard 🏆</h2>
+
+<div id="board"></div>
+
+</div>
+
+<!-- ================= ACHIEVEMENT ================= -->
+
+<div class="card stats-box">
+
+<h2>Achievement 🏆</h2>
+
+<div id="achBox"></div>
+
+</div>
+
+ <!--=================== ANIMASI ================= -->
+
+<div class="cat">
+    <div id="catBubble" class="speech-bubble">Halo!</div>
+    <span id="catEmoji">️🙀</span>
+</div>
+
+<div class="monster">
+    <div id="monsterBubble" class="speech-bubble">Grrr!</div>
+    <span id="monsterEmoji">👺</span>
+</div>
+
+<script>
+
+// ================ ANINATION ==============
+
+ let catX = 100;
+let monsterX = 300;
+let speedCat = 2;
+let speedMonster = 1.5;
+
+// ================= SOUND =================
+
+const clickSound = new Audio("click.wav");
+const successSound = new Audio("success.wav");
+const errorSound = new Audio("error.wav");
+const coinSound = new Audio("coin.wav");
+
+function playSound(sound){
+
+sound.currentTime = 0;
+sound.play();
+
+}
+
+ let sessionStats = {
+  correct: 0,
+  wrong: 0
+};
+
+let totalCoins = getCoins();
+
+// ================= PLAYER =================
+
+const player = localStorage.getItem("player");
+
+if(!player){
+window.location.href="index.html";
+}
+
+document.getElementById("playerName").innerText =
+"Halo, " + player;
+
+// ================= COIN =================
+
+function getCoins(){
+
+return parseInt(
+localStorage.getItem("totalCoins")
+) || 0;
+
+}
+
+function setCoins(v) {
+    localStorage.setItem("totalCoins", v);
+    totalCoins = v; 
+    
+    // Update data di localStorage Leaderboard
+    updateLeaderboard(); 
+    
+    // Paksa UI Leaderboard buat gambar ulang
+    loadBoard(); 
+}
+
+// ================= ACHIEVEMENT =================
+
+const ACHIEVEMENTS = [
+
+{id:"first",name:"First Clear",desc:"Selesaikan 1 quiz"},
+
+{id:"kaya",name:"Kaya",desc:"Punya 150 coin"},
+
+{id:"saudagar",name:"Saudagar",desc:"Beli 5 item shop"},
+
+{id:"penakluk",name:"Penakluk",desc:"Jawab 10 soal benar tanpa salah 1 pun dalam 1 session"},
+
+{id:"otakai",name:"Otak AI",desc:"Selesaikan 1 mapel tanpa 1 jawaban salah"},
+
+{id:"gakngotak",name:"Gak Ngotak",desc:"Dapatkan Saudagar + Penakluk + Otak AI sekaligus"}
+
+];
+
+ function unlockAch(id){
+  let owned = JSON.parse(localStorage.getItem("achievements")) || [];
+
+  if(!owned.includes(id)){
+    owned.push(id);
+    localStorage.setItem("achievements", JSON.stringify(owned));
+  }
+}
+// ================= UI =================
+
+function refresh(){
+    totalCoins = getCoins(); 
+
+    const coinEl = document.getElementById("coinValue");
+    if(coinEl) coinEl.innerText = totalCoins;
+
+    updateLeaderboard(); 
+    updateRank();
+    updateInventory();
+    updateButtons();
+    loadProfile();
+    updateTTSButton();
+    
+    // Cek apakah fungsi ini ada sebelum dipanggil biar gak crash
+    if (typeof updatePetVisuals === "function") updatePetVisuals();
+}
+
+
+
+ function updateTTSButton(){
+  const btn = document.getElementById("ttsBtn");
+  if(!btn) return;
+
+  if(localStorage.getItem("ttsUnlocked") === "true"){
+    btn.innerText = "🧩 Main TTS";
+  } else {
+    btn.innerText = "🧩 Main TTS 🔒";
+  }
+}
+
+// ================= RANK =================
+
+function updateRank(){
+
+let r = "Pemula";
+
+if(totalCoins >= 1000){
+r = "Dewa";
+}
+else if(totalCoins >= 500){
+r = "Master";
+}
+else if(totalCoins >= 200){
+r = "Jago";
+}
+else if(totalCoins >= 100){
+r = "Menengah";
+}
+
+document.getElementById("rankValue").innerText =
+"Rank: " + r;
+
+}
+
+// ================= ACHIEVEMENT =================
+
+function loadAchievement(){
+
+let owned =
+JSON.parse(
+localStorage.getItem("achievements")
+) || [];
+
+let box =
+document.getElementById("achBox");
+
+box.innerHTML = "";
+
+ACHIEVEMENTS.forEach(a=>{
+
+let div = document.createElement("div");
+
+div.innerText = "🏆 " + a.name;
+
+let got = owned.includes(a.id);
+
+if(!got){
+div.classList.add("locked");
+}
+
+div.onclick = ()=>{
+
+playSound(clickSound);
+
+showAch(a);
+
+};
+
+box.appendChild(div);
+
+});
+
+}
+
+function showAch(a){
+
+alert(
+a.name +
+"\n\nCara dapet:\n" +
+a.desc
+);
+
+}
+
+ function unlockAch(id){
+  let owned = JSON.parse(localStorage.getItem("achievements")) || [];
+
+  if(!owned.includes(id)){
+    owned.push(id);
+    localStorage.setItem("achievements", JSON.stringify(owned));
+
+    loadAchievement(); // 👈 AUTO REFRESH UI
+  }
+}
+
+// ============ ANIMATION NPC =========== //
+
+function loopGame() {
+  const cat = document.querySelector(".cat");
+  const monster = document.querySelector(".monster");
+
+  if (!cat || !monster) return;
+
+  const width = window.innerWidth;
+
+  catX += speedCat;
+  
+    // 2. Pergerakan Monster
+  const mBubble = document.getElementById("monsterBubble"); // Ambil elemen bubble-nya
+
+  if (monsterX < catX) {
+    monsterX += speedMonster;
+    monster.style.transform = "scaleX(1)";
+    if(mBubble) mBubble.style.transform = "scaleX(1)"; // Normal
+  } else {
+    monsterX -= speedMonster;
+    monster.style.transform = "scaleX(-1)";
+    if(mBubble) mBubble.style.transform = "scaleX(-1)"; // Paksa balik biar tulisannya gak mirror
+  }
+
+
+  let distance = Math.abs(catX - monsterX);
+  if (distance < 100 && !cat.classList.contains("jumping")) {
+    cat.classList.add("jumping");
+    setTimeout(() => {
+      cat.classList.remove("jumping");
+    }, 400);
+  }
+
+  if (catX > width) catX = -50;
+  if (catX < -50) catX = width;
+  if (monsterX > width) monsterX = -50;
+  if (monsterX < -50) monsterX = width;
+
+  // Update Posisi
+  cat.style.left = catX + "px";
+  monster.style.left = monsterX + "px";
+}
+
+
+
+// ================= COOLDOWN =================
+
+const cooldownTime = 10 * 60 * 1000;
+
+function isCooldown(sub){
+
+let last =
+localStorage.getItem(
+"cooldown_"+player+"_"+sub
+);
+
+return last &&
+(Date.now() - parseInt(last)
+< cooldownTime);
+
+}
+
+function setCooldown(sub){
+
+localStorage.setItem(
+"cooldown_"+player+"_"+sub,
+Date.now()
+);
+
+}
+
+function updateButtons(){
+
+["MTK","BINDO","BING","IPA","PAI"]
+.forEach(sub=>{
+
+let btn =
+document.getElementById("btn-"+sub);
+
+let last =
+localStorage.getItem(
+"cooldown_"+player+"_"+sub
+);
+
+if(last){
+
+let elapsed =
+Date.now() - parseInt(last);
+
+let remain =
+cooldownTime - elapsed;
+
+if(remain > 0){
+
+btn.disabled = true;
+
+let menit =
+Math.floor(remain / 60000);
+
+let detik =
+Math.floor((remain % 60000)/1000);
+
+btn.innerText =
+`${sub} (${menit}:${detik
+.toString()
+.padStart(2,"0")})`;
+
+}
+else{
+
+btn.disabled = false;
+btn.innerText = sub;
+
+}
+
+}
+else{
+
+btn.disabled = false;
+btn.innerText = sub;
+
+}
+
+});
+
+}
+
+// ================= MAPEL =================
+
+function choose(sub){
+
+playSound(clickSound);
+
+if(isCooldown(sub)){
+
+playSound(errorSound);
+
+alert("Cooldown masih aktif 10 menit");
+
+return;
+
+}
+
+setCooldown(sub);
+
+localStorage.setItem("subject",sub);
+
+window.location.href="quiz.html";
+
+}
+
+// ================= SHOP =================
+
+const items=[
+
+{id:"hint",name:"💡 Hint",price:20,desc:"Ngasih petunjuk jawaban"},
+
+{id:"skip",name:"⏭ Skip",price:60,desc:"Lewatin soal tanpa mikir"},
+
+{id:"extra",name:"⏱ Extra Time",price:40,desc:"+30 detik waktu tambahan"},
+
+{id:"reveal",name:"🎯 Reveal",price:120,desc:"Nunjukin jawaban bener"},
+
+{id:"coinboost",name:"🪙 Coin Boost +10%",price:75,desc:"Nambah perolehan coin"},
+
+{id:"cooldown",name:"⏳ Cooldown -10%",price:82,desc:"Ngurangin waktu cooldown mapel"},
+
+{id:"autoanswer",name:"🤖 Auto Answer",price:250,desc:"1 mapel auto jawab semua soal benar"},
+
+{id:"transform",name:"🔧 Transform Quiz",price:120,desc:"1 soal jadi lebih mudah"}
+
+];
+
+function loadShop(){
+
+let shop =
+document.getElementById("shop");
+
+shop.innerHTML = "";
+
+items.forEach(i=>{
+
+let div =
+document.createElement("div");
+
+div.className = "shop-item";
+
+div.innerHTML = `
+<b>${i.name}</b><br>
+
+<span class="shop-desc">
+${i.desc}
+</span><br>
+
+💰 ${i.price}
+
+<button onclick="buy('${i.id}',${i.price})">
+Beli
+</button>
+`;
+
+shop.appendChild(div);
+
+});
+
+}
+
+function buy(id, price) {
+    playSound(clickSound);
+
+    if (totalCoins < price) {
+        playSound(errorSound);
+        // Pake showToast biar lebih cakep daripada sekedar ganti teks
+        showToast("Koin lu kurang, Bos! ❌", "error"); 
+        return;
+    }
+
+    // 1. Eksekusi Pengurangan (Wajib setCoins biar Leaderboard update)
+    totalCoins -= price;
+    setCoins(totalCoins); 
+
+    // 2. Update Inventory
+    let inv = JSON.parse(localStorage.getItem("inventory")) || [];
+    inv.push(id);
+    localStorage.setItem("inventory", JSON.stringify(inv));
+
+    // 3. Efek Suara Sukses
+    playSound(coinSound);
+    setTimeout(() => playSound(successSound), 100);
+
+    // 4. Update UI Total (Koin, Rank, Inv, Suara Tombol)
+    // Cukup panggil refresh() karena di dalem refresh() udah ada semuanya
+    refresh(); 
+
+    // 5. Notifikasi Toast
+    showToast(`Berhasil beli ${id}! 🛒`, "success");
+}
+
+ // ================= USE COOLDOWN ITEM =================
+
+function useCooldownItem(){
+
+let inv =
+JSON.parse(
+localStorage.getItem("inventory")
+) || [];
+
+if(!inv.includes("cooldown")){
+
+playSound(errorSound);
+
+alert("Gak punya item cooldown");
+
+return;
+
+}
+
+let sub = prompt(
+"Pilih mapel:\nMTK\nBINDO\nBING\nIPA\nPAI"
+);
+
+if(!sub) return;
+
+sub = sub.toUpperCase();
+
+let valid = [
+"MTK",
+"BINDO",
+"BING",
+"IPA",
+"PAI"
+];
+
+if(!valid.includes(sub)){
+
+playSound(errorSound);
+
+alert("Mapel gak valid");
+
+return;
+
+}
+
+let key =
+"cooldown_"+player+"_"+sub;
+
+let last =
+localStorage.getItem(key);
+
+if(
+!last ||
+Date.now() - parseInt(last) >= cooldownTime
+){
+
+playSound(errorSound);
+
+alert("Mapel tidak sedang cooldown");
+
+return;
+
+}
+
+let elapsed =
+Date.now() - parseInt(last);
+
+let remain =
+cooldownTime - elapsed;
+
+// kurangi 10%
+let reducedRemain =
+remain - (remain * 0.10);
+
+let newLast =
+Date.now() - (cooldownTime - reducedRemain);
+
+localStorage.setItem(key,newLast);
+
+// hapus item
+let index = inv.indexOf("cooldown");
+
+if(index > -1){
+inv.splice(index,1);
+}
+
+localStorage.setItem(
+"inventory",
+JSON.stringify(inv)
+);
+
+playSound(successSound);
+
+alert(
+"Cooldown "+sub+" berhasil dikurangi 10%"
+);
+
+refresh();
+
+}
+
+ // ================= INVENTORY =================
+
+function updateInventory(){
+
+let inv =
+JSON.parse(
+localStorage.getItem("inventory")
+) || [];
+
+let box =
+document.getElementById("inventoryBox");
+
+box.innerHTML = "";
+
+if(inv.length === 0){
+
+box.innerHTML = `
+<div style="
+opacity:0.6;
+padding:10px;
+text-align:center;
+">
+Kosong 🗿
+</div>
+`;
+
+return;
+
+}
+
+let count = {};
+
+inv.forEach(i=>{
+
+if(!count[i]){
+count[i]=0;
+}
+
+count[i]++;
+
+});
+
+let icons = {
+
+hint:"💡",
+skip:"⏭",
+extra:"⏱",
+reveal:"🎯",
+coinboost:"🪙",
+cooldown:"⏳",
+autoanswer:"🤖",
+transform:"🔧"
+
+};
+
+let names = {
+
+hint:"Hint",
+skip:"Skip",
+extra:"Extra Time",
+reveal:"Reveal",
+coinboost:"Coin Boost",
+cooldown:"Cooldown",
+autoanswer:"Auto Answer",
+transform:"Transform"
+
+};
+
+Object.keys(count).forEach(i=>{
+
+let div =
+document.createElement("div");
+
+div.className = "inventory-item";
+
+div.style.display = "flex";
+div.style.alignItems = "center";
+div.style.justifyContent = "space-between";
+div.style.cursor =
+i==="cooldown"
+? "pointer"
+: "default";
+
+if(i==="cooldown"){
+div.onclick = useCooldownItem;
+}
+
+div.innerHTML = `
+
+<div style="
+display:flex;
+align-items:center;
+gap:12px;
+">
+
+<div style="
+font-size:28px;
+">
+${icons[i] || "📦"}
+</div>
+
+<div>
+
+<div style="
+font-weight:bold;
+">
+${names[i] || i}
+</div>
+
+<div style="
+font-size:12px;
+opacity:0.6;
+">
+
+${i==="cooldown"
+? "Klik untuk mengurangi cooldown"
+: "Item inventory"}
+
+</div>
+
+</div>
+
+</div>
+
+<div style="
+background:#1e293b;
+padding:6px 10px;
+border-radius:10px;
+font-size:14px;
+">
+
+x${count[i]}
+
+</div>
+
+`;
+
+box.appendChild(div);
+
+});
+
+}
+
+ // ================= PET SYSTEM LOGIC =================
+
+// Data Awal
+// Inisialisasi Data Pet & Monster (Wajib ada!)
+let petData = JSON.parse(localStorage.getItem("petData")) || { 
+    feedCount: 0, 
+    lastFeed: Date.now(), 
+    lastClaim: Date.now() 
+};
+
+let monsterData = JSON.parse(localStorage.getItem("monsterData")) || { 
+    feedCount: 0, 
+    lastFeed: Date.now(), 
+    lastClaim: Date.now() 
+};
+
+function updatePetVisuals() {
+    // 1. LOGIKA EVOLUSI
+    let petEmoji = "🐱";
+    if (petData.feedCount >= 30) petEmoji = "🦁";
+    else if (petData.feedCount >= 20) petEmoji = "🐯";
+    else if (petData.feedCount >= 10) petEmoji = "🐶";
+
+    let monsterEmoji = "👺";
+    if (monsterData.feedCount >= 30) monsterEmoji = "👻";
+    else if (monsterData.feedCount >= 20) monsterEmoji = "👾";
+    else if (monsterData.feedCount >= 10) monsterEmoji = "👽";
+
+    // 2. LOGIKA MOOD & LAPER
+    const now = Date.now();
+    const twelveHours = 12 * 60 * 60 * 1000;
+    
+    let petIsHungry = (now - (petData.lastFeed || now)) > twelveHours;
+    let monsterIsHungry = (now - (monsterData.lastFeed || now)) > twelveHours;
+
+    document.getElementById("petMood").innerText = petIsHungry ? "Status: 🤤 Laper" : "Status: ✨ Ceria";
+    document.getElementById("monsterMood").innerText = monsterIsHungry ? "Status: 🤤 Laper" : "Status: ✨ Ceria";
+    
+    // Update Preview di Card (Bukan yang jalan-jalan)
+    document.getElementById("petPreview").innerText = petEmoji;
+    document.getElementById("monsterPreview").innerText = monsterEmoji;
+    document.getElementById("petLevel").innerText = "Makan: " + petData.feedCount;
+    document.getElementById("monsterLevel").innerText = "Makan: " + monsterData.feedCount;
+    
+    // UPDATE EMOJI YANG JALAN-JALAN (Pake ID span biar gak nimpa gelembung)
+    const catEmojiEl = document.getElementById("catEmoji");
+    const monsterEmojiEl = document.getElementById("monsterEmoji");
+    if(catEmojiEl) catEmojiEl.innerText = petEmoji;
+    if(monsterEmojiEl) monsterEmojiEl.innerText = monsterEmoji;
+
+    calculatePassiveIncome(petIsHungry, monsterIsHungry);
+}
+
+
+// Tambah parameter hungry ke fungsi income
+function calculatePassiveIncome(petHungry, monsterHungry) {
+    let petRate = 0;
+    let monsterRate = 0;
+
+    // Rate Pet (Urutan dari yang paling besar dulu biar logikanya gak skip)
+    if (!petHungry) {
+        if (petData.feedCount >= 30) petRate = 7;
+        else if (petData.feedCount >= 20) petRate = 5;
+        else if (petData.feedCount >= 10) petRate = 3;
+    }
+
+    // Rate Monster
+    if (!monsterHungry) {
+        if (monsterData.feedCount >= 30) monsterRate = 7;
+        else if (monsterData.feedCount >= 20) monsterRate = 5;
+        else if (monsterData.feedCount >= 10) monsterRate = 3;
+    }
+
+    let totalRate = petRate + monsterRate;
+    document.getElementById("passiveIncomeInfo").innerText = `💰 Pendapatan Pasif: ${totalRate} koin/jam`;
+    return totalRate;
+}
+
+
+// 3. SISTEM RARE GIFT (Harta Karun)
+function checkRareGift() {
+    // Peluang 5% tiap kali buka dashboard / ganti menu
+    if (Math.random() < 0.05) {
+        const giftItems = ["hint", "extra", "skip"];
+        const randomItem = giftItems[Math.floor(Math.random() * giftItems.length)];
+        
+        // Simpan ke inventory
+        let inv = JSON.parse(localStorage.getItem("inventory")) || [];
+        inv.push(randomItem);
+        localStorage.setItem("inventory", JSON.stringify(inv));
+        
+        // Visual Feedback
+        const msgBox = document.getElementById("petEventMsg");
+        msgBox.innerText = `🎁 Pet lu nemu item ${randomItem} di jalan!`;
+        showToast(`Pet lu nemu hadiah! Check inventory.`, "info");
+        
+        playSound(successSound);
+        updateInventory();
+        
+        // Hilangkan pesan setelah 10 detik
+        setTimeout(() => { msgBox.innerText = ""; }, 10000);
+    }
+}
+
+// Modifikasi fungsi Feed dikit buat reset waktu laper
+// ================= FIX FEED SYSTEM =================
+
+function feed(type) {
+   // 1. Cek koin dulu
+    if (totalCoins < 10) {
+        playSound(errorSound);
+        showToast("Koin gak cukup buat beli makanan! 🍖", "error");
+        return;
+    }
+
+    // 2. Potong koin
+    totalCoins -= 10;
+    setCoins(totalCoins);
+    playSound(coinSound);
+
+    // 3. Update data & Reset waktu laper
+    const now = Date.now();
+    if (type === 'pet') {
+        petData.feedCount++;
+        petData.lastFeed = now;
+        localStorage.setItem("petData", JSON.stringify(petData));
+    } else {
+        monsterData.feedCount++;
+        monsterData.lastFeed = now;
+        localStorage.setItem("monsterData", JSON.stringify(monsterData));
+    }
+
+    // 4. Feedback & Refresh UI
+    showToast("Nyam nyam! Berhasil kasih makan.", "success");
+    updatePetVisuals();
+    refresh(); 
+}
+
+// Tambahkan inisialisasi claimIdleCoins di sini biar laper-nya kehitung
+function claimIdleCoins() {
+    const now = Date.now();
+    const oneHour = 60 * 60 * 1000;
+    
+    let lastClaim = petData.lastClaim || now;
+    let elapsed = now - lastClaim;
+
+    if (elapsed >= oneHour) {
+        let hoursEarned = Math.floor(elapsed / oneHour);
+        
+        const twelveHours = 12 * 60 * 60 * 1000;
+        let pHungry = (now - (petData.lastFeed || now)) > twelveHours;
+        let mHungry = (now - (monsterData.lastFeed || now)) > twelveHours;
+        
+        let ratePerHr = calculatePassiveIncome(pHungry, mHungry);
+        let totalEarned = hoursEarned * ratePerHr;
+
+        if (totalEarned > 0) {
+            totalCoins += totalEarned;
+            setCoins(totalCoins);
+            showToast(`Pet lu dapet ${totalEarned} koin pas lu off! 😴`, "info");
+            
+            petData.lastClaim = now;
+            localStorage.setItem("petData", JSON.stringify(petData));
+            refresh();
+        }
+    }
+}
+
+ const catQuotes = [
+    "Udah belajar MTK hari ini, Ngab? 🗿",
+    "Koin lu dikit amat, farming sana! 💸",
+    "Gue laper nih, bagi daging dong...",
+    "Kapan kita lawan Boss lagi?",
+    "Avatar lu keren juga (bohong ding) 🤣",
+    "Semangat belajarnya, biar gak cupu!",
+    "Eh, si Monster lagi ngeliatin lu tuh..."
+];
+
+const monsterQuotes = [
+    "Gue bakal jadi lebih kuat dari lu! 👺",
+    "Kasih makan yang banyak biar makin GG!",
+    "Grrr... koin lu enak kayaknya...",
+    "Jangan sampe kalah pas Boss Battle ya!",
+    "Gue ngerasa makin evolusi nih...",
+    "Dunia ini bakal gue kuasai! (kalo kenyang)",
+    "Si Kucing berisik banget dah."
+];
+
+function petTalk() {
+    const catBubble = document.getElementById("catBubble");
+    const monsterBubble = document.getElementById("monsterBubble");
+    const monster = document.querySelector(".monster");
+
+    // Sembunyikan semua dulu biar nggak tumpang tindih
+    catBubble.classList.remove("bubble-active");
+    monsterBubble.classList.remove("bubble-active");
+
+    const siapa = Math.floor(Math.random() * 2);
+    
+    if (siapa === 0) {
+        catBubble.innerText = catQuotes[Math.floor(Math.random() * catQuotes.length)];
+        catBubble.classList.add("bubble-active");
+        // Hilang setelah 4 detik
+        setTimeout(() => catBubble.classList.remove("bubble-active"), 4000);
+    } else {
+        const currentScale = monster.style.transform || "scaleX(1)";
+        monsterBubble.innerText = monsterQuotes[Math.floor(Math.random() * monsterQuotes.length)];
+        
+        // Anti-mirror buat teks monster
+        if (currentScale.includes("-1")) {
+            monsterBubble.style.transform = "scaleX(-1)";
+        } else {
+            monsterBubble.style.transform = "scaleX(1)";
+        }
+
+        monsterBubble.classList.add("bubble-active");
+        setTimeout(() => monsterBubble.classList.remove("bubble-active"), 4000);
+    }
+}
+
+
+
+// Biar mereka ngomong tiap 15-30 detik sekali secara random
+function startPetInterval() {
+    const randomTime = Math.floor(Math.random() * (30000 - 15000 + 1) + 15000);
+    setTimeout(() => {
+        petTalk();
+        startPetInterval();
+    }, randomTime);
+}
+
+// Jalankan fungsi ini di bagian INIT paling bawah
+startPetInterval();
+
+
+// ================= PROFILE =================
+
+function loadProfile(){
+
+let avatar =
+localStorage.getItem("avatar")
+|| "😎";
+
+let rank =
+document.getElementById("rankValue")
+.innerText
+.replace("Rank: ","");
+
+let nextLevel = 100;
+let currentStart = 0;
+
+if(totalCoins >= 1000){
+
+currentStart = 1000;
+nextLevel = 1000;
+
+}
+else if(totalCoins >= 500){
+
+currentStart = 500;
+nextLevel = 1000;
+
+}
+else if(totalCoins >= 200){
+
+currentStart = 200;
+nextLevel = 500;
+
+}
+else if(totalCoins >= 100){
+
+currentStart = 100;
+nextLevel = 200;
+
+}
+
+let progress =
+((totalCoins-currentStart) /
+(nextLevel-currentStart))*100;
+
+if(totalCoins >= 1000){
+progress = 100;
+}
+
+let box =
+document.getElementById("profileBox");
+
+box.innerHTML = `
+
+<div style="
+display:flex;
+align-items:center;
+gap:15px;
+">
+
+<div style="
+font-size:50px;
+cursor:pointer;
+" onclick="changeAvatar()">
+
+${avatar}
+
+</div>
+
+<div style="flex:1;">
+
+<h3>${player}</h3>
+
+<p>🏆 ${rank}</p>
+
+<p>🪙 ${totalCoins} coin</p>
+
+<div style="
+margin-top:10px;
+background:rgba(255,255,255,0.08);
+height:14px;
+border-radius:999px;
+overflow:hidden;
+">
+
+<div style="
+height:100%;
+width:${progress}%;
+background:linear-gradient(
+90deg,
+#fbbf24,
+#f59e0b
+);
+transition:0.3s;
+">
+</div>
+
+</div>
+
+<p style="
+font-size:12px;
+opacity:0.7;
+margin-top:5px;
+">
+
+${totalCoins >= 1000
+? "MAX LEVEL"
+: totalCoins + " / " + nextLevel + " coin"}
+
+</p>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+// ================= AVATAR =================
+
+function changeAvatar(){
+
+playSound(clickSound);
+
+let ava = prompt(
+"Masukkan emoji avatar bebas:\n\nContoh:\n😎 🤖 👑 💀 🔥 🐱 🚀"
+);
+
+if(!ava) return;
+
+localStorage.setItem("avatar",ava);
+
+playSound(successSound);
+
+loadProfile();
+
+}
+
+ // ================= LEADERBOARD =================
+
+function loadBoard(){
+
+let board =
+JSON.parse(
+localStorage.getItem("leaderboard")
+) || [];
+
+// filter data rusak
+board = board.filter(p =>
+p &&
+typeof p.name === "string" &&
+!isNaN(parseInt(p.coins))
+);
+
+// pastikan coins angka
+board.forEach(p=>{
+p.coins = parseInt(p.coins) || 0;
+});
+
+// sort terbesar
+board.sort((a,b)=>b.coins-a.coins);
+
+let el =
+document.getElementById("board");
+
+el.innerHTML = "";
+
+// kalau kosong
+if(board.length === 0){
+
+el.innerHTML = `
+<div style="
+opacity:0.6;
+text-align:center;
+">
+Belum ada leaderboard 🗿
+</div>
+`;
+
+return;
+}
+
+// tampilkan top 5
+board.slice(0,5).forEach((p,i)=>{
+
+let div =
+document.createElement("div");
+
+div.innerHTML = `
+<span>
+${i+1}. ${p.name}
+</span>
+
+<span>
+🪙 ${p.coins}
+</span>
+`;
+
+el.appendChild(div);
+
+});
+
+}
+
+ function updateLeaderboard() {
+    let currentCoins = getCoins(); 
+    let board = JSON.parse(localStorage.getItem("leaderboard")) || [];
+
+// Hapus newbie_ganteng dari data lama
+board = board.filter(p => p.name !== "Newbie_Ganteng");
+board = board.filter(p => p.name !== "Wong Ganteng");
+board = board.filter(p => p.name !== "Wong_Ganteng");
+board = board.filter(p => p.name !== "Wong_Nangis");
+
+    // DATA BOT DEFAULT - Nama sudah diupdate!
+    const defaultBots = [
+        { name: "Lord_Fanny", coins: 2300 },
+        { name: "Pro_Player", coins: 850 }, 
+        { name: "Ambasing", coins: 540}
+         // Ini yang baru jier
+    ];
+
+    // Sisanya sama kayak tadi...
+    if (board.length === 0) {
+        board = [...defaultBots];
+    } else {
+        defaultBots.forEach(bot => {
+            if (!board.find(p => p.name === bot.name)) {
+                board.push(bot);
+            }
+        });
+    }
+
+    let myIndex = board.findIndex(p => p.name === player);
+    if (myIndex > -1) {
+        board[myIndex].coins = currentCoins;
+    } else {
+        board.push({ name: player, coins: currentCoins });
+    }
+
+    board.sort((a, b) => b.coins - a.coins);
+    localStorage.setItem("leaderboard", JSON.stringify(board));
+    loadBoard(); 
+}
+
+
+
+
+ // ================= STATS =================
+
+function loadStats(){
+
+let stats =
+JSON.parse(
+localStorage.getItem("stats")
+) || {
+
+played:0,
+win:0,
+correct:0,
+wrong:0,
+bestScore:0
+
+};
+
+document.getElementById("statsBox")
+.innerHTML = `
+
+<div style="
+display:flex;
+flex-direction:column;
+gap:10px;
+">
+
+<div>🎮 Main : ${stats.played}</div>
+
+<div>🏆 Menang : ${stats.win}</div>
+
+<div>✅ Benar : ${stats.correct}</div>
+
+<div>❌ Salah : ${stats.wrong}</div>
+
+<div>🔥 Best Score : ${stats.bestScore}</div>
+
+</div>
+
+`;
+
+}
+
+ // ================= FAST GAME =================
+
+const fastCooldown =
+10 * 60 * 1000;
+
+function openFastGame(){
+
+if(isFastCooldown()) return;
+
+window.location.href =
+"tebakcepat.html";
+
+}
+
+function isFastCooldown(){
+
+let last =
+localStorage.getItem(
+"fastCooldown_"+player
+);
+
+return last &&
+(Date.now() - parseInt(last)
+< fastCooldown);
+
+}
+
+function updateFastButton(){
+
+let btn =
+document.getElementById("fastBtn");
+
+let last =
+localStorage.getItem(
+"fastCooldown_"+player
+);
+
+if(last){
+
+let elapsed =
+Date.now() - parseInt(last);
+
+let remain =
+fastCooldown - elapsed;
+
+if(remain > 0){
+
+btn.disabled = true;
+
+let menit =
+Math.floor(remain / 60000);
+
+let detik =
+Math.floor((remain % 60000)/1000);
+
+btn.innerText =
+`⏳ ${menit}:${detik
+.toString()
+.padStart(2,"0")}`;
+
+}else{
+
+btn.disabled = false;
+
+btn.innerText =
+"⚡ Main Sekarang";
+
+}
+
+}else{
+
+btn.disabled = false;
+
+btn.innerText =
+"⚡ Main Sekarang";
+
+}
+
+}
+
+// ================ TTS UNLOCK ===========
+
+ function openTTS(){
+
+let unlocked =
+localStorage.getItem("ttsUnlocked") === "true";
+
+let coins =
+parseInt(
+localStorage.getItem("totalCoins")
+) || 0;
+
+// kalau udah unlock
+if(unlocked){
+
+window.location.href =
+"tts-select.html";
+
+return;
+
+}
+
+// kalau coin kurang
+if(coins < 850){
+
+alert(
+"Koin tidak cukup 🗿\nButuh 850 coin."
+);
+
+return;
+
+}
+
+// beli
+coins -= 850;
+
+localStorage.setItem(
+"totalCoins",
+coins
+);
+
+localStorage.setItem(
+"ttsUnlocked",
+"true"
+);
+
+alert(
+"TTS MODE berhasil dibuka 🔥"
+);
+
+// masuk
+window.location.href =
+"tts-select.html";
+
+}
+
+ const ttsBtn =
+document.getElementById("ttsBtn");
+
+if(
+localStorage.getItem("ttsUnlocked")
+=== "true"
+){
+
+ttsBtn.innerText =
+"🧩 Main TTS";
+
+}
+
+ // ================= SUPER BOSS (FIXED) ===========
+function goSuperHardBoss() {
+    let coin = getCoins();
+
+    if (coin < 250) {
+        showToast("Koin kurang. Balik farming dulu.", "error");
+        return;
+    }
+
+    // PAKAI setCoins agar leaderboard otomatis terupdate
+    setCoins(coin - 250);
+
+    window.location.href = "super-boss.html";
+}
+
+// ================= THEME =================
+
+const themes = [
+
+{
+id:"common",
+name:"🌌 Galaxy",
+price:60,
+rarity:"Common",
+bg:"linear-gradient(135deg,#1e293b,#0f172a)"
+},
+
+{
+id:"rare",
+name:"🔥 Lava",
+price:80,
+rarity:"Rare",
+bg:"linear-gradient(135deg,#7f1d1d,#dc2626)"
+},
+
+{
+id:"epic",
+name:"💜 Neon",
+price:100,
+rarity:"Epic",
+bg:"linear-gradient(135deg,#4c1d95,#7c3aed)"
+},
+
+{
+id:"legendary",
+name:"⚡ Cyber",
+price:120,
+rarity:"Legendary",
+bg:"linear-gradient(135deg,#0f172a,#06b6d4)"
+},
+
+{
+id:"mythic",
+name:"👑 Golden",
+price:200,
+rarity:"Mythic",
+bg:"linear-gradient(135deg,#78350f,#fbbf24)"
+}
+
+];
+
+// ================= APPLY THEME =================
+
+function applyTheme(){
+
+let equipped =
+localStorage.getItem("equippedTheme");
+
+ if(!equipped){
+equipped = "common";
+}
+
+let theme =
+themes.find(t=>t.id===equipped);
+
+if(!theme) return;
+
+// background body
+document.body.style.background =
+theme.bg;
+
+// bubble
+let bubbles =
+document.querySelectorAll(".bubble");
+
+// reset dulu
+bubbles.forEach(b=>{
+
+b.style.background =
+"rgba(255,255,255,0.05)";
+
+});
+
+// warna sesuai theme
+if(theme.id === "rare"){
+
+bubbles.forEach(b=>{
+b.style.background =
+"rgba(255,80,80,0.15)";
+});
+
+}
+
+else if(theme.id === "epic"){
+
+bubbles.forEach(b=>{
+b.style.background =
+"rgba(168,85,247,0.15)";
+});
+
+}
+
+else if(theme.id === "legendary"){
+
+bubbles.forEach(b=>{
+b.style.background =
+"rgba(34,211,238,0.15)";
+});
+
+}
+
+else if(theme.id === "mythic"){
+
+bubbles.forEach(b=>{
+b.style.background =
+"rgba(251,191,36,0.18)";
+});
+
+}
+
+}
+
+// ================= LOAD THEME SHOP =================
+
+function loadThemeShop(){
+
+let box =
+document.getElementById("themeShop");
+
+box.innerHTML = "";
+
+let owned =
+JSON.parse(
+localStorage.getItem("ownedThemes")
+) || [];
+
+let equipped =
+localStorage.getItem("equippedTheme");
+
+themes.forEach(t=>{
+
+let div =
+document.createElement("div");
+
+div.className = "shop-item";
+
+let button = "";
+
+if(owned.includes(t.id)){
+
+if(equipped === t.id){
+
+button = `
+<button disabled>
+✅ Equipped
+</button>
+`;
+
+}else{
+
+button = `
+<button onclick="equipTheme('${t.id}')">
+Equip
+</button>
+`;
+
+}
+
+}else{
+
+button = `
+<button onclick="buyTheme('${t.id}',${t.price})">
+Beli
+</button>
+`;
+
+}
+
+div.innerHTML = `
+
+<b>
+${t.name}
+</b>
+
+<span class="shop-desc">
+
+${t.rarity}
+<br>
+💰 ${t.price}
+
+</span>
+
+${button}
+
+`;
+
+box.appendChild(div);
+
+});
+
+}
+
+// ================= BUY THEME =================
+
+function buyTheme(id,price){
+
+playSound(clickSound);
+
+if(totalCoins < price){
+
+playSound(errorSound);
+
+alert("Coin kurang");
+
+return;
+
+}
+
+totalCoins -= price;
+
+setCoins(totalCoins);
+
+let owned =
+JSON.parse(
+localStorage.getItem("ownedThemes")
+) || [];
+
+owned.push(id);
+
+localStorage.setItem(
+"ownedThemes",
+JSON.stringify(owned)
+);
+
+playSound(successSound);
+
+refresh();
+loadThemeShop();
+
+}
+
+// ================= EQUIP =================
+
+function equipTheme(id){
+
+localStorage.setItem(
+"equippedTheme",
+id
+);
+
+playSound(successSound);
+
+applyTheme();
+loadThemeShop();
+
+}
+
+// ================ BOSS GAME (FIXED) =============
+function goBossBattle() {
+    let coin = getCoins(); // Gunakan fungsi pembantu yang sudah kamu buat
+
+    if (coin < 150) {
+        showToast("Koin kurang. Balik farming dulu 🗿", "error");
+        return;
+    }
+
+    // PAKAI setCoins agar leaderboard otomatis terupdate sebelum pindah halaman
+    setCoins(coin - 150);
+
+    window.location.href = "bossselect.html";
+}
+
+
+ // ================= GLOBAL TOAST FUNCTION =================
+function showToast(message, type = "success") {
+    const container = document.getElementById("toast-container");
+    const toast = document.createElement("div");
+    
+    // Pilih icon berdasarkan tipe
+    let icon = "🔔";
+    if(type === "success") icon = "✅";
+    if(type === "error") icon = "❌";
+    if(type === "info") icon = "ℹ️";
+
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    
+    container.appendChild(toast);
+
+    // Hapus elemen setelah animasi selesai (3 detik total)
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// ================= UPDATE FUNGSI LAMA =================
+// Ganti pemanggilan alert di fungsi yang sudah ada:
+// Contoh di fungsi changeAvatar():
+function changeAvatar() {
+    let ava = prompt("Masukkan emoji avatar:");
+    if(!ava) return;
+    localStorage.setItem("avatar", ava);
+    showToast("Avatar berhasil diupdate! 🔥", "success");
+    loadProfile();
+}
+
+ // Fungsi untuk memasang suara klik ke SEMUA tombol secara otomatis
+function initButtonSounds() {
+    // Ambil semua elemen button di halaman
+    const allButtons = document.querySelectorAll('button');
+    
+    allButtons.forEach(btn => {
+        // Tambahkan event listener 'click' tanpa menimpa onclick yang sudah ada
+        btn.addEventListener('click', () => {
+            playSound(clickSound);
+        });
+    });
+}
+
+// Jalankan fungsi saat halaman selesai dimuat
+document.addEventListener('DOMContentLoaded', initButtonSounds);
+
+
+
+
+// ================= FINAL INIT (VERSI BERSIH) =================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Bersihkan sisa-sisa data quest yang mungkin bikin koin error
+    localStorage.removeItem("questData");
+
+    claimIdleCoins(); 
+    updatePetVisuals(); 
+    checkRareGift();
+    loadShop();
+    loadBoard();
+    loadAchievement();
+    loadProfile();
+    loadStats();
+    applyTheme();
+    loadThemeShop();
+    updateFastButton();
+    refresh();
+    refresh();
+    
+    // Jalankan Loop sistem
+    setInterval(updateButtons, 1000);
+    setInterval(updateFastButton, 1000);
+    setInterval(loopGame, 16);
+    setInterval(claimIdleCoins, 60000); 
+    
+    // Sistem suara dan interaksi pet
+    if (typeof initButtonSounds === "function") initButtonSounds();
+    startPetInterval(); 
+    petTalk();
+
+    // Auto refresh saat pindah tab
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+            refresh();
+        }
+    });
+});
+
+
+
+</script>
+<div id="toast-container"></div>
+
+</body>
+
+</html>
